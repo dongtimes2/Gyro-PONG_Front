@@ -1,7 +1,17 @@
+import { Route, Routes } from 'react-router-dom';
+
+import GlobalStyles from './components/GlobalStyles';
+import Guides from './pages/Guides';
+import Main from './pages/Main';
+
 function App() {
   return (
     <>
-      <h1>hello world</h1>
+      <GlobalStyles />
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="/guides" element={<Guides />} />
+      </Routes>
     </>
   );
 }
