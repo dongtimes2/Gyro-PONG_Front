@@ -18,6 +18,19 @@ const GlobalStyles = createGlobalStyle`
     user-select: none;
   }
 
+  button {
+    color: white;
+    background-color: transparent;
+    border: 1px solid white;
+    font-family: 'DungGeunMo';
+    cursor: pointer;
+  }
+
+  button: hover {
+    color: black;
+    background-color: white;
+  }
+
   a {
     color: white;
     text-decoration: none;
