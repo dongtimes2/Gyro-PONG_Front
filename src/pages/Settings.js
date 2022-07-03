@@ -1,73 +1,159 @@
 import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import ConnectionInfo from '../components/ConnectionInfo';
+import ModalPortal from '../components/ModalPortal';
+import Modal from '../components/Mordal';
+import settingState from '../recoil/settingState';
+import userState from '../recoil/userState';
+
 export default function Settings() {
-  const [isVibrationMode, setIsVibrationMode] = useState(false);
-  const [isPlayingMusic, setIsPlayingMusic] = useState(false);
-  const [isPlayingSFX, setIsPlayingSFX] = useState(false);
-  const [isChangedByMotion, setIsChangedByMotion] = useState(false);
+  const [setting, setSetting] = useRecoilState(settingState);
+  const user = useRecoilValue(userState);
+  const [isShowingModal, setIsShowingModal] = useState(false);
 
   const handleToggleButtonClick = (event) => {
     switch (event.target.name) {
       case 'vibration':
-        setIsVibrationMode((value) => !value);
+        setSetting({
+          ...setting,
+          isVibrationMode: !setting.isVibrationMode,
+        });
         break;
       case 'music':
-        setIsPlayingMusic((value) => !value);
+        setSetting({
+          ...setting,
+          isPlayingMusic: !setting.isPlayingMusic,
+        });
         break;
       case 'sfx':
-        setIsPlayingSFX((value) => !value);
+        setSetting({
+          ...setting,
+          isPlayingSFX: !setting.isPlayingSFX,
+        });
         break;
       case 'motion':
-        setIsChangedByMotion((value) => !value);
+        setSetting({
+          ...setting,
+          isChangedPageByMotion: !setting.isChangedPageByMotion,
+        });
         break;
       default:
         break;
     }
   };
 
+  const handleConnectionButtonClick = () => {
+    setIsShowingModal(true);
+  };
+
   return (
-    <SettingsWrap>
-      <div className="title-area">| Settings |</div>
-      <div className="content-area">
-        <div className="toggle-button-area">
-          <button
-            type="button"
-            name="vibration"
-            onClick={handleToggleButtonClick}
-          >
-            진동
+    <>
+      <SettingsWrap>
+        <div className="title-area">| Settings |</div>
+        <div className="content-area">
+          <div className="toggle-button-area">
+            <button
+              type="button"
+              name="vibration"
+              onClick={handleToggleButtonClick}
+            >
+              진동 (아이폰은 지원하지 않음)
+            </button>
+            <div className="status-box">
+              {setting.isVibrationMode ? 'O' : 'X'}
+            </div>
+          </div>
+          <div className="toggle-button-area">
+            <button
+              type="button"
+              name="music"
+              onClick={handleToggleButtonClick}
+            >
+              배경음악
+            </button>
+            <div className="status-box">
+              {setting.isPlayingMusic ? 'O' : 'X'}
+            </div>
+          </div>
+          <div className="toggle-button-area">
+            <button type="button" name="sfx" onClick={handleToggleButtonClick}>
+              효과음
+            </button>
+            <div className="status-box">{setting.isPlayingSFX ? 'O' : 'X'}</div>
+          </div>
+          <div className="toggle-button-area">
+            <button
+              type="button"
+              name="motion"
+              onClick={handleToggleButtonClick}
+            >
+              컨트롤러 모션으로 메뉴 이동하기
+            </button>
+            <div className="status-box">
+              {setting.isChangedPageByMotion ? 'O' : 'X'}
+            </div>
+          </div>
+          <button type="button" onClick={handleConnectionButtonClick}>
+            모바일 컨트롤러 연결 설정
           </button>
-          <div className="status-box">{isVibrationMode ? 'O' : 'X'}</div>
         </div>
-        <div className="toggle-button-area">
-          <button type="button" name="music" onClick={handleToggleButtonClick}>
-            배경음악
-          </button>
-          <div className="status-box">{isPlayingMusic ? 'O' : 'X'}</div>
+        <div className="button-area">
+          <Link to="/">메인 화면으로 돌아가기</Link>
         </div>
-        <div className="toggle-button-area">
-          <button type="button" name="sfx" onClick={handleToggleButtonClick}>
-            효과음
-          </button>
-          <div className="status-box">{isPlayingSFX ? 'O' : 'X'}</div>
-        </div>
-        <div className="toggle-button-area">
-          <button type="button" name="motion" onClick={handleToggleButtonClick}>
-            컨트롤러 모션으로 메뉴 이동하기
-          </button>
-          <div className="status-box">{isChangedByMotion ? 'O' : 'X'}</div>
-        </div>
-        <button type="button">모바일 컨트롤러 연결 설정</button>
-      </div>
-      <div className="button-area">
-        <Link to="/">메인 화면으로 돌아가기</Link>
-      </div>
-    </SettingsWrap>
+      </SettingsWrap>
+
+      {isShowingModal && (
+        <ModalPortal>
+          <Modal onClose={setIsShowingModal}>
+            <ModalContentWrap>
+              <ConnectionInfo
+                isConnected={user.controllerId}
+                userId={user.id}
+              />
+              <div className="button-area">
+                <button onClick={() => setIsShowingModal(false)}>나가기</button>
+              </div>
+            </ModalContentWrap>
+          </Modal>
+        </ModalPortal>
+      )}
+    </>
   );
 }
+
+const ModalContentWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  color: black;
+  width: 100%;
+  height: 100%;
+
+  .button-area {
+    display: flex;
+    justify-content: center;
+    flex-basis: 6%;
+  }
+
+  .button-area button {
+    color: black;
+    font-size: 40px;
+    padding: 0px 50px;
+    border: 1px solid black;
+  }
+
+  .button-area button:hover {
+    color: white;
+    background-color: black;
+  }
+
+  .button-area button:active {
+    color: #3b3b3b;
+  }
+`;
 
 const SettingsWrap = styled.div`
   display: flex;

@@ -26,9 +26,13 @@ const GlobalStyles = createGlobalStyle`
     cursor: pointer;
   }
 
-  button: hover {
+  button:hover {
     color: black;
     background-color: white;
+  }
+
+  button:active {
+    color: #e2e2e2;
   }
 
   a {
@@ -37,7 +41,7 @@ const GlobalStyles = createGlobalStyle`
     border: 1px solid white;
   }
 
-  a: hover {
+  a:hover {
     color: black;
     background-color: white;
   }
