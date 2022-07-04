@@ -11,6 +11,6 @@ const SocketEvent = {
   CONTROLLER_CONNECTION_FAILURE: 'controllerConnectionFailure',
 };
 
-Object.freeze(Event);
+Object.freeze(SocketEvent);
 
 export default SocketEvent;
