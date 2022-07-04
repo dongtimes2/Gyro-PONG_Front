@@ -23,3 +23,15 @@ export const controllerCompatibilitySuccess = () => {
 export const controllerCompatibilityFailure = () => {
   socket.emit(SocketEvent.CONTROLLER_COMPATIBILITY_FAILURE);
 };
+
+export const enterMotionSettingPage = (deviceId) => {
+  socket.emit(SocketEvent.ENTER_MOTION_SETTING_PAGE, deviceId);
+};
+
+export const startMotionSetting = () => {
+  socket.emit(SocketEvent.START_MOTION_SETTING);
+};
+
+export const sendSensorData = (data) => {
+  socket.emit(SocketEvent.SEND_SENSOR_DATA, data);
+};

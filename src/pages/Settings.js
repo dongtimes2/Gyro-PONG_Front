@@ -7,6 +7,8 @@ import styled from 'styled-components';
 import ConnectionInfo from '../components/ConnectionInfo';
 import ModalPortal from '../components/ModalPortal';
 import Modal from '../components/Mordal';
+import MotionSetting from '../components/MotionSetting';
+import { ModalContentPage } from '../constants/page';
 import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
 
@@ -14,6 +16,7 @@ export default function Settings() {
   const [setting, setSetting] = useRecoilState(settingState);
   const user = useRecoilValue(userState);
   const [isShowingModal, setIsShowingModal] = useState(false);
+  const [modalContentPage, setModalContentPage] = useState('');
 
   const handleToggleButtonClick = (event) => {
     switch (event.target.name) {
@@ -46,7 +49,18 @@ export default function Settings() {
     }
   };
 
+  const handleCloseModalButtonClick = () => {
+    setModalContentPage('');
+    setIsShowingModal(false);
+  };
+
   const handleConnectionButtonClick = () => {
+    setModalContentPage(ModalContentPage.CONNECTION);
+    setIsShowingModal(true);
+  };
+
+  const handleMotionButtonClick = () => {
+    setModalContentPage(ModalContentPage.MOTION);
     setIsShowingModal(true);
   };
 
@@ -92,15 +106,20 @@ export default function Settings() {
               name="motion"
               onClick={handleToggleButtonClick}
             >
-              컨트롤러 모션으로 메뉴 이동하기
+              컨트롤러 움직임으로 메뉴 이동하기
             </button>
             <div className="status-box">
               {setting.isChangedPageByMotion ? 'O' : 'X'}
             </div>
           </div>
           <button type="button" onClick={handleConnectionButtonClick}>
-            모바일 컨트롤러 연결 설정
+            컨트롤러 연결 설정
           </button>
+          {setting.isCompatible && (
+            <button type="button" onClick={handleMotionButtonClick}>
+              컨트롤러 움직임 범위 설정
+            </button>
+          )}
         </div>
         <div className="button-area">
           <Link to="/">메인 화면으로 돌아가기</Link>
@@ -109,16 +128,21 @@ export default function Settings() {
 
       {isShowingModal && (
         <ModalPortal>
-          <Modal onClose={setIsShowingModal}>
+          <Modal onClose={handleCloseModalButtonClick}>
             <ModalContentWrap>
-              <ConnectionInfo
-                isConnected={Boolean(user.controllerId)}
-                userId={user.id}
-                isCheckingCompatibility={setting.isCheckingCompatibility}
-                isCompatible={setting.isCompatible}
-              />
+              {modalContentPage === ModalContentPage.CONNECTION && (
+                <ConnectionInfo
+                  isConnected={Boolean(user.controllerId)}
+                  userId={user.id}
+                  isCheckingCompatibility={setting.isCheckingCompatibility}
+                  isCompatible={setting.isCompatible}
+                />
+              )}
+              {modalContentPage === ModalContentPage.MOTION && (
+                <MotionSetting />
+              )}
               <div className="button-area">
-                <button type="button" onClick={() => setIsShowingModal(false)}>
+                <button type="button" onClick={handleCloseModalButtonClick}>
                   나가기
                 </button>
               </div>
