@@ -16,6 +16,7 @@ const GlobalStyles = createGlobalStyle`
     color: white;
     font-family: 'DungGeunMo';
     user-select: none;
+    overflow: hidden;
   }
 
   button {
