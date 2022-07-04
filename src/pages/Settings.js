@@ -61,7 +61,8 @@ export default function Settings() {
               name="vibration"
               onClick={handleToggleButtonClick}
             >
-              진동 (아이폰은 지원하지 않음)
+              진동
+              <div className="sub-text">(아이폰 지원 불가)</div>
             </button>
             <div className="status-box">
               {setting.isVibrationMode ? 'O' : 'X'}
@@ -111,11 +112,15 @@ export default function Settings() {
           <Modal onClose={setIsShowingModal}>
             <ModalContentWrap>
               <ConnectionInfo
-                isConnected={user.controllerId}
+                isConnected={Boolean(user.controllerId)}
                 userId={user.id}
+                isCheckingCompatibility={setting.isCheckingCompatibility}
+                isCompatible={setting.isCompatible}
               />
               <div className="button-area">
-                <button onClick={() => setIsShowingModal(false)}>나가기</button>
+                <button type="button" onClick={() => setIsShowingModal(false)}>
+                  나가기
+                </button>
               </div>
             </ModalContentWrap>
           </Modal>
@@ -195,13 +200,19 @@ const SettingsWrap = styled.div`
   }
 
   .status-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     flex-basis: 10%;
     border-top: 1px solid white;
     border-bottom: 1px solid white;
     border-right: 1px solid white;
     padding: 10px;
     font-size: 40px;
-    text-align: center;
+  }
+
+  .sub-text {
+    font-size: 20px;
   }
 
   a {

@@ -7,6 +7,8 @@ const settingState = atom({
     isPlayingMusic: false,
     isPlayingSFX: false,
     isChangedPageByMotion: false,
+    isCheckingCompatibility: false,
+    isCompatible: false,
   },
 });
 

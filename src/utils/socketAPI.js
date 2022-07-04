@@ -15,3 +15,11 @@ export const registerControllerId = (userId) => {
 export const disconnectController = (userId) => {
   socket.emit(SocketEvent.DISCONNECT_CONTROLLER, userId);
 };
+
+export const controllerCompatibilitySuccess = () => {
+  socket.emit(SocketEvent.CONTROLLER_COMPATIBILITY_SUCCESS);
+};
+
+export const controllerCompatibilityFailure = () => {
+  socket.emit(SocketEvent.CONTROLLER_COMPATIBILITY_FAILURE);
+};

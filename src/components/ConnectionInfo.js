@@ -2,21 +2,59 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import controllerUrlGenerator from '../utils/controllerUrlGenerator';
+import urlCopier from '../utils/urlCopier';
 
 import Qrcode from './Qrcode';
 
-const ConnectionInfo = ({ isConnected, userId }) => {
+const ConnectionInfo = ({
+  isConnected,
+  userId,
+  isCheckingCompatibility,
+  isCompatible,
+}) => {
   const controllerUrl = controllerUrlGenerator(userId);
 
-  const handleCopyButtonClick = async () => {
-    await navigator.clipboard.writeText(controllerUrl);
+  const handleCopyButtonClick = () => {
+    urlCopier(controllerUrl);
   };
 
   return (
     <ConnectionInfoWrap>
       {isConnected ? (
         <>
-          <div className="header">기기가 연결되어 있습니다</div>
+          {isCheckingCompatibility && (
+            <>
+              <div className="header">
+                <div>기기를 발견하였습니다.</div>
+                <div>자이로센서 활성화 버튼을 눌러주세요.</div>
+              </div>
+              <div className="icon-area">
+                <div> ! </div>
+              </div>
+            </>
+          )}
+
+          {!isCheckingCompatibility &&
+            (isCompatible ? (
+              <>
+                <div className="header">
+                  <div>연결에 성공하였습니다.</div>
+                </div>
+                <div className="icon-area">
+                  <div>ok</div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="header">
+                  <div>기기에 자이로센서를 찾을 수 없습니다.</div>
+                  <div>다른 기기를 이용해주세요.</div>
+                </div>
+                <div className="icon-area">
+                  <div>error</div>
+                </div>
+              </>
+            ))}
         </>
       ) : (
         <>
@@ -39,8 +77,10 @@ const ConnectionInfo = ({ isConnected, userId }) => {
 };
 
 ConnectionInfo.propTypes = {
-  isConnected: PropTypes.any.isRequired,
+  isConnected: PropTypes.bool.isRequired,
   userId: PropTypes.string.isRequired,
+  isCheckingCompatibility: PropTypes.bool.isRequired,
+  isCompatible: PropTypes.bool.isRequired,
 };
 
 const ConnectionInfoWrap = styled.div`
@@ -52,6 +92,7 @@ const ConnectionInfoWrap = styled.div`
 
   .header {
     display: flex;
+    flex-direction: column;
     align-items: center;
     flex-basis: 15%;
     font-size: 50px;
@@ -64,6 +105,13 @@ const ConnectionInfoWrap = styled.div`
     flex-basis: 60%;
     font-size: 30px;
     text-align: center;
+  }
+
+  .icon-area {
+    display: flex;
+    flex-basis: 85%;
+    font-size: 150px;
+    align-items: center;
   }
 
   .link-area {
