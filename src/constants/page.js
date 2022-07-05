@@ -17,7 +17,9 @@ export const ControllerPage = {
   TURN_LEFT: 'turnLeft',
   TURN_RIGHT: 'turnRight',
   HEAD_FORWARD: 'headForward',
+  SETTING_FINISH: 'settingFinish',
   DEFAULT: 'default',
+  CONNECTION_SUCCESS: 'connectionSuccess',
 };
 
 Object.freeze(MotionSettingPage);

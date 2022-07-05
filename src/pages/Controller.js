@@ -12,6 +12,9 @@ import {
   socket,
   startMotionSetting,
   sendSensorData,
+  sendExit,
+  switchMotionSettingPage,
+  disconnectController,
 } from '../utils/socketAPI';
 
 export default function Controller() {
@@ -48,14 +51,38 @@ export default function Controller() {
       setControllerPage(ControllerPage.HEAD_FORWARD);
     });
 
+    socket.on(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE, () => {
+      setControllerPage(ControllerPage.SETTING_FINISH);
+    });
+
     socket.on(SocketEvent.LOAD_CONTROLLER_DEFAULT_PAGE, () => {
       setControllerPage(ControllerPage.DEFAULT);
     });
+
+    socket.on(SocketEvent.LOAD_CONTROLLER_CONNECTION_SUCCESS_PAGE, () => {
+      setControllerPage(ControllerPage.CONNECTION_SUCCESS);
+    });
   }, []);
 
-  const handleOrientation = useCallback((event) => {
-    if (!isCompatibilityChecked.current) {
-      isCompatibilityChecked.current = true;
+  const sensorValueSetter = (paramAlpha, paramBeta, paramGamma) => {
+    alpha.current = parseInt(paramAlpha);
+    beta.current = parseInt(paramBeta);
+    gamma.current = parseInt(paramGamma);
+  };
+
+  const getCompatibilityCheckHistory = () => {
+    return isCompatibilityChecked.current;
+  };
+
+  const compatibilityChecked = () => {
+    isCompatibilityChecked.current = true;
+  };
+
+  const compatibilityChecker = (event) => {
+    const result = getCompatibilityCheckHistory();
+
+    if (!result) {
+      compatibilityChecked();
 
       if (!(event.alpha || event.beta || event.gamma)) {
         controllerCompatibilityFailure();
@@ -64,12 +91,11 @@ export default function Controller() {
         controllerCompatibilitySuccess();
       }
     }
+  };
 
-    alpha.current = parseInt(event.alpha);
-    beta.current = parseInt(event.beta);
-    gamma.current = parseInt(event.gamma);
-
-    socket.emit('sensor', alpha.current);
+  const handleOrientation = useCallback((event) => {
+    compatibilityChecker(event);
+    sensorValueSetter(event.alpha, event.beta, event.gamma);
   }, []);
 
   const sensorActivate = async () => {
@@ -96,10 +122,6 @@ export default function Controller() {
     sensorActivate();
   };
 
-  const handleDeactiveButtonClick = () => {
-    sensorDeactivate();
-  };
-
   const handleStartSettingButtonClick = () => {
     startMotionSetting();
   };
@@ -112,6 +134,22 @@ export default function Controller() {
     sendSensorData({ type: controllerPage, value: gamma.current });
   };
 
+  const handleActivationExit = () => {
+    sendExit();
+    disconnectController();
+    setControllerPage(ControllerPage.DEFAULT);
+  };
+
+  const handleExit = () => {
+    sendExit();
+    setControllerPage(ControllerPage.DEFAULT);
+  };
+
+  const handleSettingMotion = () => {
+    switchMotionSettingPage();
+    setControllerPage(ControllerPage.MOTION_SETTING);
+  };
+
   return (
     <ControllerWrap>
       {controllerPage === ControllerPage.DEFAULT && (
@@ -121,18 +159,36 @@ export default function Controller() {
       )}
       {controllerPage === ControllerPage.SENSOR_ACTIVATE && (
         <>
+          <div className="header">활성화 버튼을 눌러주세요</div>
           <button type="button" onClick={handleActiveButtonClick}>
             자이로 센서 활성화
           </button>
-          <button type="button" onClick={handleDeactiveButtonClick}>
-            자이로 센서 비활성화
+          <button type="button" onClick={handleActivationExit}>
+            나가기
+          </button>
+        </>
+      )}
+      {controllerPage === ControllerPage.CONNECTION_SUCCESS && (
+        <>
+          <div className="header">연결에 성공하였습니다.</div>
+          <button type="button" onClick={handleSettingMotion}>
+            움직임 범위 설정하기
+          </button>
+          <button type="button" onClick={handleExit}>
+            나가기
           </button>
         </>
       )}
       {controllerPage === ControllerPage.MOTION_SETTING && (
-        <button type="button" onClick={handleStartSettingButtonClick}>
-          측정 시작하기
-        </button>
+        <>
+          <div className="header">시작하기 버튼을 눌러주세요</div>
+          <button type="button" onClick={handleStartSettingButtonClick}>
+            측정 시작하기
+          </button>
+          <button type="button" onClick={handleExit}>
+            나가기
+          </button>
+        </>
       )}
       {controllerPage === ControllerPage.TURN_LEFT && (
         <>
@@ -155,6 +211,14 @@ export default function Controller() {
           <div className="header">기기를 전방으로 기울여주세요</div>
           <button type="button" onClick={handleGammaValueSettingButtonClick}>
             확인
+          </button>
+        </>
+      )}
+      {controllerPage === ControllerPage.SETTING_FINISH && (
+        <>
+          <div className="header">세팅이 완료되었습니다</div>
+          <button type="button" onClick={handleExit}>
+            나가기
           </button>
         </>
       )}

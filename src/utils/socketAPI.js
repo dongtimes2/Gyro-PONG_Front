@@ -12,8 +12,8 @@ export const registerControllerId = (userId) => {
   socket.emit(SocketEvent.REGISTER_CONTROLLER_ID, userId);
 };
 
-export const disconnectController = (userId) => {
-  socket.emit(SocketEvent.DISCONNECT_CONTROLLER, userId);
+export const disconnectController = () => {
+  socket.emit(SocketEvent.DISCONNECT_CONTROLLER);
 };
 
 export const controllerCompatibilitySuccess = () => {
@@ -34,4 +34,12 @@ export const startMotionSetting = () => {
 
 export const sendSensorData = (data) => {
   socket.emit(SocketEvent.SEND_SENSOR_DATA, data);
+};
+
+export const sendExit = () => {
+  socket.emit(SocketEvent.SEND_EXIT);
+};
+
+export const switchMotionSettingPage = () => {
+  socket.emit(SocketEvent.SWITCH_MOTION_SETTING_PAGE);
 };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Link } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -9,15 +9,27 @@ import ModalPortal from '../components/ModalPortal';
 import Modal from '../components/Mordal';
 import MotionSetting from '../components/MotionSetting';
 import { ModalContentPage } from '../constants/page';
+import SocketEvent from '../constants/socket';
 import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
 import playClickSound from '../utils/playClickSound';
+import { socket } from '../utils/socketAPI';
 
 export default function Settings() {
   const [setting, setSetting] = useRecoilState(settingState);
   const user = useRecoilValue(userState);
   const [isShowingModal, setIsShowingModal] = useState(false);
   const [modalContentPage, setModalContentPage] = useState('');
+
+  useEffect(() => {
+    socket.on(SocketEvent.RECEIVE_EXIT, () => {
+      handleCloseModalButtonClick();
+    });
+
+    socket.on(SocketEvent.RECEIVE_SWITCH_MOTION_SETTING_PAGE, () => {
+      handleMotionButtonClick();
+    });
+  }, []);
 
   const handleToggleButtonClick = (event) => {
     switch (event.target.name) {

@@ -16,14 +16,19 @@ const SocketEvent = {
   LOAD_CONTROLLER_FORWARD_SETTING_PAGE: 'loadControllerForwardSettingPage',
   LOAD_CONTROLLER_DEFAULT_PAGE: 'loadControllerDefaultPage',
   LOAD_CONTROLLER_SENSOR_ACTIVATE_PAGE: 'loadControllerSensorActivatePage',
+  LOAD_CONTROLLER_SETTING_FINISH_PAGE: 'loadControllerSettingFinishPage',
+  LOAD_CONTROLLER_CONNECTION_SUCCESS_PAGE:
+    'loadControllerConnectionSuccessPage',
   START_MOTION_SETTING: 'startMotionSetting',
-  ORDER_TO_TURN_LEFT: 'orderToTurnLeft',
-  ORDER_TO_TURN_RIGHT: 'orderToTurnRight',
   SEND_SENSOR_DATA: 'sendSensorData',
   RECEIVE_MOTION_SETTING_BEGIN: 'receiveMotionSettingBegin',
   RECEIVE_LEFT_DATA: 'receiveLeftData',
   RECEIVE_RIGHT_DATA: 'receiveRightData',
   RECEIVE_FORWARD_DATA: 'receiveForwardData',
+  SEND_EXIT: 'sendExit',
+  RECEIVE_EXIT: 'receiveExit',
+  SWITCH_MOTION_SETTING_PAGE: 'switchMotionSettingPage',
+  RECEIVE_SWITCH_MOTION_SETTING_PAGE: 'receiveSwitchMotionSettingPage',
 };
 
 Object.freeze(SocketEvent);
