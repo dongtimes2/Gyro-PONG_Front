@@ -13,38 +13,44 @@ const GlobalStyles = createGlobalStyle`
 
   body {
     background-color: black;
-    color: white;
+    color: #00ff2b;
     font-family: 'DungGeunMo';
     user-select: none;
     overflow: hidden;
   }
 
   button {
-    color: white;
+    color: #00ff2b;
     background-color: transparent;
-    border: 1px solid white;
+    border: 1px solid #00ff2b;
     font-family: 'DungGeunMo';
     cursor: pointer;
   }
 
   button:hover {
     color: black;
-    background-color: white;
+    background-color: #00ff2b;
   }
 
   button:active {
-    color: #e2e2e2;
+    background-color: black;
+    color: #00ff2b;
   }
 
   a {
-    color: white;
+    color: #00ff2b;
     text-decoration: none;
-    border: 1px solid white;
+    border: 1px solid #00ff2b;
   }
 
   a:hover {
     color: black;
-    background-color: white;
+    background-color: #00ff2b;
+  }
+
+  a:active {
+    background-color: black;
+    color: #00ff2b;
   }
 `;
 

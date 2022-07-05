@@ -182,7 +182,7 @@ export default function Settings() {
 const ModalContentWrap = styled.div`
   display: flex;
   flex-direction: column;
-  color: black;
+  color: #00ff2b;
   width: 100%;
   height: 100%;
 
@@ -193,19 +193,20 @@ const ModalContentWrap = styled.div`
   }
 
   .button-area button {
-    color: black;
+    color: #00ff2b;
     font-size: 40px;
     padding: 0px 50px;
-    border: 1px solid black;
+    border: 1px solid #00ff2b;
   }
 
   .button-area button:hover {
-    color: white;
-    background-color: black;
+    color: black;
+    background-color: #00ff2b;
   }
 
   .button-area button:active {
-    color: #3b3b3b;
+    color: #00ff2b;
+    background-color: black;
   }
 `;
 
@@ -253,9 +254,9 @@ const SettingsWrap = styled.div`
     justify-content: center;
     align-items: center;
     flex-basis: 10%;
-    border-top: 1px solid white;
-    border-bottom: 1px solid white;
-    border-right: 1px solid white;
+    border-top: 1px solid #00ff2b;
+    border-bottom: 1px solid #00ff2b;
+    border-right: 1px solid #00ff2b;
     padding: 10px;
     font-size: 40px;
   }

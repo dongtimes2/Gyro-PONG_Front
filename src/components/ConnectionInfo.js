@@ -132,20 +132,21 @@ const ConnectionInfoWrap = styled.div`
     height: 80%;
   }
 
-  button {
-    color: black;
+  .button-area button {
+    color: #00ff2b;
     font-size: 40px;
-    border: 1px solid black;
+    border: 1px solid #00ff2b;
     padding: 0px 50px;
   }
 
-  button:hover {
-    color: white;
-    background-color: black;
+  .button-area button:hover {
+    color: black;
+    background-color: #00ff2b;
   }
 
-  button:active {
-    color: #3b3b3b;
+  .button-area button:active {
+    background-color: black;
+    color: #00ff2b;
   }
 `;
 

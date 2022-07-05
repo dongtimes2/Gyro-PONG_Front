@@ -36,10 +36,11 @@ const Box = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #e2e2e2;
+  background-color: black;
   width: 80%;
   height: 70%;
   padding: 30px;
+  border: 5px solid #00ff2b;
 `;
 
 export default Modal;
