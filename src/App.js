@@ -42,7 +42,15 @@ function App() {
       });
 
       setSetting((prev) => {
-        return { ...prev, isCheckingCompatibility: false };
+        return {
+          ...prev,
+          isCheckingCompatibility: false,
+          isCompatible: false,
+          isCompletedMotionSettings: false,
+          left: 0,
+          right: 0,
+          forward: 0,
+        };
       });
     });
 
