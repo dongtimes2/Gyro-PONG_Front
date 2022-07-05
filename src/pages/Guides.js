@@ -1,9 +1,21 @@
 import { Link } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import settingState from '../recoil/settingState';
+import playClickSound from '../utils/playClickSound';
+
 export default function Guide() {
+  const setting = useRecoilValue(settingState);
+
+  const handleButtonSound = (event) => {
+    if (event.target.nodeName === 'A' && setting.isPlayingSFX) {
+      playClickSound();
+    }
+  };
+
   return (
-    <GuidesWrap>
+    <GuidesWrap onClick={handleButtonSound}>
       <div className="title-area">| Guides |</div>
       <div className="content-area">
         <div>

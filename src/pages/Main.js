@@ -1,9 +1,21 @@
 import { Link } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import settingState from '../recoil/settingState';
+import playClickSound from '../utils/playClickSound';
+
 export default function Main() {
+  const setting = useRecoilValue(settingState);
+
+  const handleButtonSound = (event) => {
+    if (event.target.nodeName === 'A' && setting.isPlayingSFX) {
+      playClickSound();
+    }
+  };
+
   return (
-    <MainWrap>
+    <MainWrap onClick={handleButtonSound}>
       <div className="title-area">| Gyro PONG |</div>
 
       <div className="button-area">

@@ -11,6 +11,7 @@ import MotionSetting from '../components/MotionSetting';
 import { ModalContentPage } from '../constants/page';
 import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
+import playClickSound from '../utils/playClickSound';
 
 export default function Settings() {
   const [setting, setSetting] = useRecoilState(settingState);
@@ -50,6 +51,10 @@ export default function Settings() {
   };
 
   const handleCloseModalButtonClick = () => {
+    if (setting.isPlayingSFX) {
+      playClickSound();
+    }
+
     setModalContentPage('');
     setIsShowingModal(false);
   };
@@ -64,9 +69,18 @@ export default function Settings() {
     setIsShowingModal(true);
   };
 
+  const handleButtonSound = (event) => {
+    if (
+      (event.target.nodeName === 'BUTTON' || event.target.nodeName === 'A') &&
+      setting.isPlayingSFX
+    ) {
+      playClickSound();
+    }
+  };
+
   return (
     <>
-      <SettingsWrap>
+      <SettingsWrap onClick={handleButtonSound}>
         <div className="title-area">| Settings |</div>
         <div className="content-area">
           <div className="toggle-button-area">
@@ -76,7 +90,6 @@ export default function Settings() {
               onClick={handleToggleButtonClick}
             >
               진동
-              <div className="sub-text">(아이폰 지원 불가)</div>
             </button>
             <div className="status-box">
               {setting.isVibrationMode ? 'O' : 'X'}
@@ -233,10 +246,6 @@ const SettingsWrap = styled.div`
     border-right: 1px solid white;
     padding: 10px;
     font-size: 40px;
-  }
-
-  .sub-text {
-    font-size: 20px;
   }
 
   a {
