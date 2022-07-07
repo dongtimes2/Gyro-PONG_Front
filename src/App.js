@@ -6,7 +6,9 @@ import { useSetRecoilState } from 'recoil';
 import GlobalStyles from './components/GlobalStyles';
 import SocketEvent from './constants/socket';
 import Controller from './pages/Controller';
+import Game from './pages/Game';
 import Guides from './pages/Guides';
+import Lobby from './pages/Lobby';
 import Main from './pages/Main';
 import Settings from './pages/Settings';
 import settingState from './recoil/settingState';
@@ -75,6 +77,8 @@ function App() {
         <Route path="/guides" element={<Guides />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/controller/:userId" element={<Controller />} />
+        <Route path="/lobby" element={<Lobby />} />
+        <Route path="/game/:gameId" element={<Game />} />
       </Routes>
     </>
   );

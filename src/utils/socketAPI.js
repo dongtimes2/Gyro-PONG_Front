@@ -43,3 +43,11 @@ export const sendExit = () => {
 export const switchMotionSettingPage = () => {
   socket.emit(SocketEvent.SWITCH_MOTION_SETTING_PAGE);
 };
+
+export const createGame = (data) => {
+  socket.emit(SocketEvent.CREATE_GAME, data);
+};
+
+export const requestGameList = () => {
+  socket.emit(SocketEvent.REQUEST_GAME_LIST);
+};
