@@ -15,6 +15,10 @@ import {
   sendExit,
   switchMotionSettingPage,
   disconnectController,
+  sendControllerJoinGame,
+  sendAlpha,
+  sendBeta,
+  sendGamma,
 } from '../utils/socketAPI';
 
 export default function Controller() {
@@ -53,6 +57,7 @@ export default function Controller() {
 
     socket.on(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE, () => {
       setControllerPage(ControllerPage.SETTING_FINISH);
+      sensorDeactivate();
     });
 
     socket.on(SocketEvent.LOAD_CONTROLLER_DEFAULT_PAGE, () => {
@@ -62,12 +67,33 @@ export default function Controller() {
     socket.on(SocketEvent.LOAD_CONTROLLER_CONNECTION_SUCCESS_PAGE, () => {
       setControllerPage(ControllerPage.CONNECTION_SUCCESS);
     });
+
+    socket.on(SocketEvent.RECEIVE_GAME_ID, (gameId) => {
+      sensorActivate();
+      sendControllerJoinGame(gameId);
+    });
   }, []);
 
   const sensorValueSetter = (paramAlpha, paramBeta, paramGamma) => {
-    alpha.current = parseInt(paramAlpha);
-    beta.current = parseInt(paramBeta);
-    gamma.current = parseInt(paramGamma);
+    let intAlpha = parseInt(paramAlpha);
+    let intBeta = parseInt(paramBeta);
+    let intGamma = parseInt(paramGamma);
+
+    if (intAlpha !== alpha.current) {
+      sendAlpha(intAlpha);
+    }
+
+    if (intBeta !== beta.current) {
+      sendBeta(intBeta);
+    }
+
+    if (intGamma !== gamma.current) {
+      sendGamma(intGamma);
+    }
+
+    alpha.current = intAlpha;
+    beta.current = intBeta;
+    gamma.current = intGamma;
   };
 
   const getCompatibilityCheckHistory = () => {
@@ -123,6 +149,7 @@ export default function Controller() {
   };
 
   const handleStartSettingButtonClick = () => {
+    sensorActivate();
     startMotionSetting();
   };
 

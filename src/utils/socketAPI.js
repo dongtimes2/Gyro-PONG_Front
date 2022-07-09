@@ -49,5 +49,37 @@ export const createGame = (data) => {
 };
 
 export const requestGameList = () => {
-  socket.emit(SocketEvent.REQUEST_GAME_LIST);
+  socket.emit(SocketEvent.REQUEST_GAME_ROOM_LIST);
+};
+
+export const sendJoinGame = (data) => {
+  socket.emit(SocketEvent.SEND_JOIN_GAME, data);
+};
+
+export const sendGuestExitGame = (gameId) => {
+  socket.emit(SocketEvent.SEND_GUEST_EXIT_GAME, gameId);
+};
+
+export const sendHostExitGame = (gameId) => {
+  socket.emit(SocketEvent.SEND_HOST_EXIT_GAME, gameId);
+};
+
+export const sendGameStart = (gameId) => {
+  socket.emit(SocketEvent.SEND_GAME_START, gameId);
+};
+
+export const sendControllerJoinGame = (gameId) => {
+  socket.emit(SocketEvent.SEND_CONTROLLER_JOIN_GAME, gameId);
+};
+
+export const sendAlpha = (alpha) => {
+  socket.emit(SocketEvent.SEND_ALPHA, alpha);
+};
+
+export const sendBeta = (beta) => {
+  socket.emit(SocketEvent.SEND_BETA, beta);
+};
+
+export const sendGamma = (gamma) => {
+  socket.emit(SocketEvent.SEND_GAMMA, gamma);
 };
