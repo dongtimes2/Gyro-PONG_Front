@@ -26,10 +26,10 @@ export default function Lobby() {
       setGameLIst([...data]);
     };
 
-    socket.on(SocketEvent.RECEIVE_GAME_LIST, gameListSetter);
+    socket.on(SocketEvent.RECEIVE_GAME_ROOM_LIST, gameListSetter);
 
     return () => {
-      socket.off(SocketEvent.RECEIVE_GAME_LIST, gameListSetter);
+      socket.off(SocketEvent.RECEIVE_GAME_ROOM_LIST, gameListSetter);
     };
   }, []);
 
