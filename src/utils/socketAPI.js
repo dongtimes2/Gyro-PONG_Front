@@ -91,3 +91,35 @@ export const userExitGame = (gameId) => {
 export const sendResizeEvent = (gameId) => {
   socket.emit(SocketEvent.SEND_RESIZE_EVENT, gameId);
 };
+
+export const sendRoomIsFull = (gameId) => {
+  socket.emit(SocketEvent.SEND_ROOM_IS_FULL, gameId);
+};
+
+export const sendRoomIsNotFull = (gameId) => {
+  socket.emit(SocketEvent.SEND_ROOM_IS_NOT_FULL, gameId);
+};
+
+export const sendHostWinVibration = (gameId) => {
+  socket.emit(SocketEvent.SEND_HOST_WIN_VIBRATION, gameId);
+};
+
+export const sendGuestWinVibration = (gameId) => {
+  socket.emit(SocketEvent.SEND_GUEST_WIN_VIBRATION, gameId);
+};
+
+export const sendHostLoseVibration = (gameId) => {
+  socket.emit(SocketEvent.SEND_HOST_LOSE_VIBRATION, gameId);
+};
+
+export const sendGuestLoseVibration = (gameId) => {
+  socket.emit(SocketEvent.SEND_GUEST_LOSE_VIBRATION, gameId);
+};
+
+export const sendHostPaddleVibration = (gameId) => {
+  socket.emit(SocketEvent.SEND_HOST_PADDLE_VIBRATION, gameId);
+};
+
+export const sendGuestPaddleVibration = (gameId) => {
+  socket.emit(SocketEvent.SEND_GUEST_PADDLE_VIBRATION, gameId);
+};

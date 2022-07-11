@@ -5,13 +5,19 @@ import styled from 'styled-components';
 
 import SocketEvent from '../constants/socket';
 import {
+  sendGuestLoseVibration,
+  sendGuestPaddleVibration,
   sendGuestWin,
+  sendGuestWinVibration,
+  sendHostLoseVibration,
+  sendHostPaddleVibration,
   sendHostWin,
+  sendHostWinVibration,
   sendResizeEvent,
   socket,
 } from '../utils/socketAPI';
 
-const Pong = ({ roomData }) => {
+const Pong = ({ roomData, setting }) => {
   const wrapRef = useRef(null);
   const canvasRef = useRef(null);
   const width = Math.floor(roomData.width / 10) * 10;
@@ -170,6 +176,9 @@ const Pong = ({ roomData }) => {
         ballDeltaY = getDeltaValue(roomData.isNormalMode, canvas.width);
         ballCenterX = canvas.width / 2;
         ballCenterY = canvas.height / 2;
+
+        setting.isVibrationMode && sendGuestWinVibration(roomData.gameId);
+        setting.isVibrationMode && sendHostLoseVibration(roomData.gameId);
       }
 
       if (ballRight >= canvas.width) {
@@ -179,6 +188,9 @@ const Pong = ({ roomData }) => {
         ballDeltaY = getDeltaValue(roomData.isNormalMode, canvas.width);
         ballCenterX = canvas.width / 2;
         ballCenterY = canvas.height / 2;
+
+        setting.isVibrationMode && sendGuestLoseVibration(roomData.gameId);
+        setting.isVibrationMode && sendHostWinVibration(roomData.gameId);
       }
 
       if (
@@ -188,6 +200,7 @@ const Pong = ({ roomData }) => {
         hostPaddleVerticalStartpoint + paddleLength > ballTop
       ) {
         ballDeltaX *= -1;
+        setting.isVibrationMode && sendHostPaddleVibration(roomData.gameId);
       }
 
       if (
@@ -197,6 +210,7 @@ const Pong = ({ roomData }) => {
         guestPaddleVerticalStartpoint + paddleLength > ballTop
       ) {
         ballDeltaX *= -1;
+        setting.isVibrationMode && sendGuestPaddleVibration(roomData.gameId);
       }
 
       ballCenterX += ballDeltaX;
@@ -277,6 +291,7 @@ const Pong = ({ roomData }) => {
     roomData.gameId,
     width,
     height,
+    setting.isVibrationMode,
   ]);
 
   return (
@@ -300,6 +315,7 @@ const CanvasWrap = styled.div`
 
 Pong.propTypes = {
   roomData: PropTypes.object.isRequired,
+  setting: PropTypes.object.isRequired,
 };
 
 export default Pong;

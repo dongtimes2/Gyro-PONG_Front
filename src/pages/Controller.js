@@ -32,6 +32,49 @@ export default function Controller() {
 
   const params = useParams();
 
+  const compatibilityChecker = useCallback((event) => {
+    const result = getCompatibilityCheckHistory();
+
+    if (!result) {
+      compatibilityChecked();
+
+      if (!(event.alpha || event.beta || event.gamma)) {
+        controllerCompatibilityFailure();
+        return;
+      } else {
+        controllerCompatibilitySuccess();
+      }
+    }
+  }, []);
+
+  const handleOrientation = useCallback(
+    (event) => {
+      compatibilityChecker(event);
+      sensorValueSetter(event.alpha, event.beta, event.gamma);
+    },
+    [compatibilityChecker],
+  );
+
+  const sensorActivate = useCallback(async () => {
+    if (typeof DeviceOrientationEvent !== 'undefined') {
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        const response = await DeviceOrientationEvent.requestPermission();
+
+        if (response === 'granted') {
+          window.addEventListener('deviceorientation', handleOrientation);
+        }
+      } else {
+        window.addEventListener('deviceorientation', handleOrientation);
+      }
+    } else {
+      controllerCompatibilityFailure();
+    }
+  }, [handleOrientation]);
+
+  const sensorDeactivate = useCallback(() => {
+    window.removeEventListener('deviceorientation', handleOrientation);
+  }, [handleOrientation]);
+
   useEffect(() => {
     registerControllerId(params.userId);
 
@@ -72,7 +115,39 @@ export default function Controller() {
       sensorActivate();
       sendControllerJoinGame(gameId);
     });
-  }, []);
+
+    socket.on(SocketEvent.RECEIVE_PADDLE_VIBRATION, () => {
+      window.navigator.vibrate([200]);
+    });
+
+    socket.on(SocketEvent.RECEIVE_WIN_VIBRATION, () => {
+      window.navigator.vibrate([200, 10, 200]);
+    });
+
+    socket.on(SocketEvent.RECEIVE_LOSE_VIBRATION, () => {
+      window.navigator.vibrate([700]);
+    });
+
+    socket.on(SocketEvent.CONTROLLER_EXIT_GAME, () => {
+      sensorDeactivate();
+    });
+
+    return () => {
+      socket.off(SocketEvent.LOAD_CONTROLLER_SENSOR_ACTIVATE_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_MOTION_SETTING_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_LEFT_SETTING_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_RIGHT_SETTING_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_FORWARD_SETTING_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_DEFAULT_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_CONNECTION_SUCCESS_PAGE);
+      socket.off(SocketEvent.RECEIVE_GAME_ID);
+      socket.off(SocketEvent.RECEIVE_PADDLE_VIBRATION);
+      socket.off(SocketEvent.RECEIVE_WIN_VIBRATION);
+      socket.off(SocketEvent.RECEIVE_LOSE_VIBRATION);
+      socket.off(SocketEvent.CONTROLLER_EXIT_GAME);
+    };
+  }, [setControllerPage, params.userId, sensorActivate, sensorDeactivate]);
 
   const sensorValueSetter = (paramAlpha, paramBeta, paramGamma) => {
     let intAlpha = parseInt(paramAlpha);
@@ -102,46 +177,6 @@ export default function Controller() {
 
   const compatibilityChecked = () => {
     isCompatibilityChecked.current = true;
-  };
-
-  const compatibilityChecker = (event) => {
-    const result = getCompatibilityCheckHistory();
-
-    if (!result) {
-      compatibilityChecked();
-
-      if (!(event.alpha || event.beta || event.gamma)) {
-        controllerCompatibilityFailure();
-        return;
-      } else {
-        controllerCompatibilitySuccess();
-      }
-    }
-  };
-
-  const handleOrientation = useCallback((event) => {
-    compatibilityChecker(event);
-    sensorValueSetter(event.alpha, event.beta, event.gamma);
-  }, []);
-
-  const sensorActivate = async () => {
-    if (typeof DeviceOrientationEvent !== 'undefined') {
-      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-        const response = await DeviceOrientationEvent.requestPermission();
-
-        if (response === 'granted') {
-          window.addEventListener('deviceorientation', handleOrientation);
-        }
-      } else {
-        window.addEventListener('deviceorientation', handleOrientation);
-      }
-    } else {
-      controllerCompatibilityFailure();
-    }
-  };
-
-  const sensorDeactivate = () => {
-    window.removeEventListener('deviceorientation', handleOrientation);
   };
 
   const handleActiveButtonClick = () => {

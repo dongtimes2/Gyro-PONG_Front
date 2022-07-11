@@ -9,10 +9,13 @@ import ModalPortal from '../components/ModalPortal';
 import Modal from '../components/Mordal';
 import Pong from '../components/Pong';
 import SocketEvent from '../constants/socket';
+import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
 import {
   sendGameStart,
   sendJoinGame,
+  sendRoomIsFull,
+  sendRoomIsNotFull,
   socket,
   userExitGame,
 } from '../utils/socketAPI';
@@ -27,6 +30,7 @@ export default function Game() {
   const [hasErrorOccurred, setHasErrorOccurred] = useState(false);
   const [roomData, setRoomData] = useState({});
   const user = useRecoilValue(userState);
+  const setting = useRecoilValue(settingState);
   const gameRef = useRef(null);
 
   const naviagte = useNavigate();
@@ -40,10 +44,10 @@ export default function Game() {
 
       if (data.userList.length === 2) {
         setIsAbleToStart(true);
-        socket.emit(SocketEvent.SEND_ROOM_IS_FULL, params.gameId);
+        sendRoomIsFull(params.gameId);
       } else {
         setIsAbleToStart(false);
-        socket.emit(SocketEvent.SEND_ROOM_IS_NOT_FULL, params.gameId);
+        sendRoomIsNotFull(params.gameId);
       }
 
       setRoomData({ ...data });
@@ -141,7 +145,7 @@ export default function Game() {
           <>
             {isGameStarted ? (
               <>
-                <Pong roomData={roomData}></Pong>
+                <Pong roomData={roomData} setting={setting}></Pong>
               </>
             ) : (
               <div className="waiting-area">
