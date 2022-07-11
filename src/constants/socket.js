@@ -51,6 +51,7 @@ const SocketEvent = {
   RECEIVE_HOST_WIN: 'receiveHostWin',
   RECEIVE_GUEST_WIN: 'receiveGuestWin',
   USER_EXIT_GAME: 'userExitGame',
+  SEND_RESIZE_EVENT: 'sendResizeEvent',
 };
 
 Object.freeze(SocketEvent);

@@ -87,3 +87,7 @@ export const sendGuestWin = (gameId) => {
 export const userExitGame = (gameId) => {
   socket.emit(SocketEvent.USER_EXIT_GAME, gameId);
 };
+
+export const sendResizeEvent = (gameId) => {
+  socket.emit(SocketEvent.SEND_RESIZE_EVENT, gameId);
+};

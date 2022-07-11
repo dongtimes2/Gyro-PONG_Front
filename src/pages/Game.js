@@ -23,6 +23,7 @@ export default function Game() {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [isUserWinner, setIsUserWinner] = useState(false);
   const [isShowingModal, setIsShowingModal] = useState(false);
+  const [isForfeit, setIsForfeit] = useState(false);
   const [hasErrorOccurred, setHasErrorOccurred] = useState(false);
   const [roomData, setRoomData] = useState({});
   const user = useRecoilValue(userState);
@@ -59,18 +60,26 @@ export default function Game() {
       setIsGameStarted(true);
     };
 
-    const receiveHostWin = (hostId) => {
-      if (user.id === hostId) {
+    const receiveHostWin = (data) => {
+      if (user.id === data.hostId) {
         setIsUserWinner(true);
+      }
+
+      if (data.forfeit) {
+        setIsForfeit(true);
       }
 
       setIsShowingModal(true);
       setIsGameStarted(false);
     };
 
-    const receiveGuestWin = (hostId) => {
-      if (user.id !== hostId) {
+    const receiveGuestWin = (data) => {
+      if (user.id !== data.hostId) {
         setIsUserWinner(true);
+      }
+
+      if (data.forfeit) {
+        setIsForfeit(true);
       }
 
       setIsShowingModal(true);
@@ -114,6 +123,7 @@ export default function Game() {
 
   const handleCloseModal = () => {
     setIsShowingModal(false);
+    isForfeit && naviagte('/lobby');
   };
 
   return (
@@ -155,10 +165,10 @@ export default function Game() {
 
       {isShowingModal && (
         <ModalPortal>
-          <Modal onClose={setIsShowingModal}>
+          <Modal onClose={handleCloseModal}>
             <ModalContentWrap>
               <div className="result-area">
-                {isUserWinner ? <div>YOU WIN</div> : <div>YOU LOSE</div>}
+                {isUserWinner ? <div>승리</div> : <div>패배</div>}
               </div>
               <div className="button-area">
                 <button type="button" onClick={handleCloseModal}>

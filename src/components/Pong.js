@@ -4,7 +4,12 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import SocketEvent from '../constants/socket';
-import { sendGuestWin, sendHostWin, socket } from '../utils/socketAPI';
+import {
+  sendGuestWin,
+  sendHostWin,
+  sendResizeEvent,
+  socket,
+} from '../utils/socketAPI';
 
 const Pong = ({ roomData }) => {
   const wrapRef = useRef(null);
@@ -259,10 +264,17 @@ const Pong = ({ roomData }) => {
       }
     };
 
+    const handleResize = () => {
+      sendResizeEvent(roomData.gameId);
+      window.removeEventListener('resize', handleResize);
+    };
+
     socket.on(SocketEvent.RECEIVE_BETA, handlePaddleMove);
+    window.addEventListener('resize', handleResize);
 
     return () => {
       socket.off(SocketEvent.RECEIVE_BETA, handlePaddleMove);
+      window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(requestId);
     };
   }, [
