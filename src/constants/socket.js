@@ -41,13 +41,13 @@ const SocketEvent = {
   RECEIVE_GO_TO_LOBBY: 'receiveGoToLobby',
   RECEIVE_GAME_START: 'receiveGameStart',
   SEND_GAME_START: 'sendGameStart',
-  SEND_HOST_EXIT_GAME: 'sendHostExitGame',
-  SEND_GUEST_EXIT_GAME: 'sendGuestExitGame',
   RECEIVE_GAME_ID: 'receiveGameId',
   SEND_CONTROLLER_JOIN_GAME: 'sendControllerJoinGame',
   SEND_ALPHA: 'sendAlpha',
   SEND_BETA: 'sendBeta',
   SEND_GAMMA: 'sendGamma',
+  SEND_HOST_WIN: 'sendHostWin',
+  SEND_GUEST_WIN: 'sendGuestWin',
 };
 
 Object.freeze(SocketEvent);

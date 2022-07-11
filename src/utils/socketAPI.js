@@ -56,14 +56,6 @@ export const sendJoinGame = (data) => {
   socket.emit(SocketEvent.SEND_JOIN_GAME, data);
 };
 
-export const sendGuestExitGame = (gameId) => {
-  socket.emit(SocketEvent.SEND_GUEST_EXIT_GAME, gameId);
-};
-
-export const sendHostExitGame = (gameId) => {
-  socket.emit(SocketEvent.SEND_HOST_EXIT_GAME, gameId);
-};
-
 export const sendGameStart = (gameId) => {
   socket.emit(SocketEvent.SEND_GAME_START, gameId);
 };
@@ -82,4 +74,12 @@ export const sendBeta = (beta) => {
 
 export const sendGamma = (gamma) => {
   socket.emit(SocketEvent.SEND_GAMMA, gamma);
+};
+
+export const sendHostWin = (gameId) => {
+  socket.emit(SocketEvent.SEND_HOST_WIN, gameId);
+};
+
+export const sendGuestWin = (gameId) => {
+  socket.emit(SocketEvent.SEND_GUEST_WIN, gameId);
 };

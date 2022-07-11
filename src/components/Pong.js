@@ -4,15 +4,14 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import SocketEvent from '../constants/socket';
-import { socket } from '../utils/socketAPI';
+import { sendGuestWin, sendHostWin, socket } from '../utils/socketAPI';
 
 const Pong = ({ roomData }) => {
   const wrapRef = useRef(null);
   const canvasRef = useRef(null);
-  const hostPaddleLocation = useRef(0);
-  const clientPaddleLocation = useRef(0);
   const width = useRef(0);
   const height = useRef(0);
+  const isFrameMoving = useRef(true);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,61 +29,232 @@ const Pong = ({ roomData }) => {
     canvas.height = height.current * pixelRatio;
 
     context.fillStyle = '#00ff2b';
+    context.strokeStyle = '#00ff2b';
+    context.font = 'normal normal 150px DungGeunMo';
 
-    const paddleLength = canvas.height / 10;
+    const getPaddleLength = (isNormalMode, canvasHeight) => {
+      if (isNormalMode) {
+        return canvasHeight / 5;
+      } else {
+        return canvasHeight / 8;
+      }
+    };
+
+    const getDeltaValue = (isNormalMode, canvasConstant) => {
+      if (isNormalMode) {
+        return canvasConstant * 0.002;
+      } else {
+        return canvasConstant * 0.005;
+      }
+    };
+
+    const getTargetScore = (isNormalTargetScore) => {
+      if (isNormalTargetScore) {
+        return 11;
+      } else {
+        return 21;
+      }
+    };
+
+    let hostScore = 0;
+    let guestScore = 0;
+
+    const getHostScore = () => {
+      return hostScore;
+    };
+
+    const getGuestScore = () => {
+      return guestScore;
+    };
+
+    const plusOneHostScore = () => {
+      hostScore += 1;
+    };
+
+    const plusOneGuestScore = () => {
+      guestScore += 1;
+    };
+
+    const ballLength = canvas.width * 0.015;
+    let ballCenterX = canvas.width / 2;
+    let ballCenterY = canvas.height / 2;
+    let ballDeltaX = getDeltaValue(roomData.isNormalMode, canvas.width);
+    let ballDeltaY = getDeltaValue(roomData.isNormalMode, canvas.height);
+    let changeAcceleration = true;
+
+    const paddleLength = getPaddleLength(roomData.isNormalMode, canvas.height);
+    const paddleWidth = canvas.width * 0.015;
+    let hostPaddleVerticalStartpoint = 0;
+    let guestPaddleVerticalStartpoint = 0;
 
     const render = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
 
+      context.beginPath();
+      context.moveTo(canvas.width / 2, 0);
+      context.lineTo(canvas.width / 2, canvas.height);
+      context.setLineDash([20, 10]);
+      context.lineWidth = 10;
+      context.stroke();
+      context.closePath();
+
+      context.fillText(
+        getHostScore(),
+        canvas.width / 2 - canvas.width / 6,
+        canvas.height / 5,
+      );
+
+      context.fillText(
+        getGuestScore(),
+        canvas.width / 2 + canvas.width / 6,
+        canvas.height / 5,
+      );
+
+      if (getHostScore() >= getTargetScore(roomData.isNormalTargetScore)) {
+        isFrameMoving.current = false;
+
+        sendHostWin(roomData.gameId);
+      }
+
+      if (getGuestScore() >= getTargetScore(roomData.isNormalTargetScore)) {
+        isFrameMoving.current = false;
+
+        sendGuestWin(roomData.gameId);
+      }
+
+      if (changeAcceleration && parseInt(ballDeltaX) >= 20) {
+        changeAcceleration = false;
+      }
+
+      const ballTop = ballCenterY - ballLength / 2;
+      const ballBottom = ballCenterY + ballLength / 2;
+      const ballLeft = ballCenterX - ballLength / 2;
+      const ballRight = ballCenterX + ballLength / 2;
+
       context.fillRect(
         canvas.width / 20,
-        hostPaddleLocation.current,
-        30,
+        hostPaddleVerticalStartpoint,
+        paddleWidth,
         paddleLength,
       );
 
       context.fillRect(
-        canvas.width - canvas.width / 20 - 30,
-        clientPaddleLocation.current,
-        30,
+        canvas.width - canvas.width / 20 - paddleWidth,
+        guestPaddleVerticalStartpoint,
+        paddleWidth,
         paddleLength,
       );
 
-      requestId = requestAnimationFrame(render);
+      context.fillRect(ballLeft, ballTop, ballLength, ballLength);
+
+      if (ballTop <= 0) {
+        ballDeltaY *= -1;
+
+        if (changeAcceleration) {
+          ballDeltaX *= 1.05;
+          ballDeltaY *= 1.05;
+        }
+      }
+
+      if (ballBottom >= canvas.height) {
+        ballDeltaY *= -1;
+
+        if (changeAcceleration) {
+          ballDeltaX *= 1.05;
+          ballDeltaY *= 1.05;
+        }
+      }
+
+      if (ballLeft <= 0) {
+        plusOneGuestScore();
+
+        ballDeltaX = getDeltaValue(roomData.isNormalMode, canvas.width);
+        ballDeltaY = getDeltaValue(roomData.isNormalMode, canvas.width);
+        ballCenterX = canvas.width / 2;
+        ballCenterY = canvas.height / 2;
+      }
+
+      if (ballRight >= canvas.width) {
+        plusOneHostScore();
+
+        ballDeltaX = getDeltaValue(roomData.isNormalMode, canvas.width);
+        ballDeltaY = getDeltaValue(roomData.isNormalMode, canvas.width);
+        ballCenterX = canvas.width / 2;
+        ballCenterY = canvas.height / 2;
+      }
+
+      if (
+        canvas.width / 20 < ballRight &&
+        canvas.width / 20 + paddleWidth >= ballLeft &&
+        hostPaddleVerticalStartpoint < ballBottom &&
+        hostPaddleVerticalStartpoint + paddleLength > ballTop
+      ) {
+        ballDeltaX *= -1;
+      }
+
+      if (
+        canvas.width - canvas.width / 20 > ballLeft &&
+        canvas.width - canvas.width / 20 - paddleWidth <= ballRight &&
+        guestPaddleVerticalStartpoint < ballBottom &&
+        guestPaddleVerticalStartpoint + paddleLength > ballTop
+      ) {
+        ballDeltaX *= -1;
+      }
+
+      ballCenterX += ballDeltaX;
+      ballCenterY += ballDeltaY;
+
+      if (isFrameMoving.current) {
+        requestId = requestAnimationFrame(render);
+      }
     };
 
     render();
 
-    const handlePaddleMove = (data) => {
-      if (data.userId === roomData.hostId) {
-        const result =
-          ((canvas.height - paddleLength) /
-            (data.leftAngle - data.rightAngle)) *
-            data.beta -
-          ((canvas.height - paddleLength) * data.rightAngle) /
-            (data.leftAngle - data.rightAngle);
+    const getPaddleVerticalEndpoint = (
+      startVerticalPoint,
+      upperLimit,
+      lowerLimit,
+      length,
+      canvasHeight,
+    ) => {
+      return (
+        ((canvasHeight - length) / (lowerLimit - upperLimit)) *
+          startVerticalPoint -
+        ((canvasHeight - length) * upperLimit) / (lowerLimit - upperLimit)
+      );
+    };
 
-        if (result + paddleLength <= canvas.height && result >= 0) {
-          hostPaddleLocation.current = result;
-        } else if (result + paddleLength > canvas.height) {
-          hostPaddleLocation.current = canvas.height - paddleLength;
-        } else if (result < 0) {
-          hostPaddleLocation.current = 0;
+    const handlePaddleMove = (data) => {
+      const paddleVerticalStartpoint = getPaddleVerticalEndpoint(
+        data.beta,
+        data.rightAngle,
+        data.leftAngle,
+        paddleLength,
+        canvas.height,
+      );
+
+      if (data.userId === roomData.hostId) {
+        if (
+          paddleVerticalStartpoint + paddleLength <= canvas.height &&
+          paddleVerticalStartpoint >= 0
+        ) {
+          hostPaddleVerticalStartpoint = paddleVerticalStartpoint;
+        } else if (paddleVerticalStartpoint + paddleLength > canvas.height) {
+          hostPaddleVerticalStartpoint = canvas.height - paddleLength;
+        } else if (paddleVerticalStartpoint < 0) {
+          hostPaddleVerticalStartpoint = 0;
         }
       } else {
-        const result =
-          ((canvas.height - paddleLength) /
-            (data.leftAngle - data.rightAngle)) *
-            data.beta -
-          ((canvas.height - paddleLength) * data.rightAngle) /
-            (data.leftAngle - data.rightAngle);
-
-        if (result + paddleLength <= canvas.height && result >= 0) {
-          clientPaddleLocation.current = result;
-        } else if (result + paddleLength > canvas.height) {
-          clientPaddleLocation.current = canvas.height - paddleLength;
-        } else if (result < 0) {
-          clientPaddleLocation.current = 0;
+        if (
+          paddleVerticalStartpoint + paddleLength <= canvas.height &&
+          paddleVerticalStartpoint >= 0
+        ) {
+          guestPaddleVerticalStartpoint = paddleVerticalStartpoint;
+        } else if (paddleVerticalStartpoint + paddleLength > canvas.height) {
+          guestPaddleVerticalStartpoint = canvas.height - paddleLength;
+        } else if (paddleVerticalStartpoint < 0) {
+          guestPaddleVerticalStartpoint = 0;
         }
       }
     };
@@ -95,7 +265,12 @@ const Pong = ({ roomData }) => {
       socket.off(SocketEvent.RECEIVE_BETA, handlePaddleMove);
       cancelAnimationFrame(requestId);
     };
-  }, []);
+  }, [
+    roomData.hostId,
+    roomData.isNormalMode,
+    roomData.isNormalTargetScore,
+    roomData.gameId,
+  ]);
 
   return (
     <CanvasWrap ref={wrapRef}>
