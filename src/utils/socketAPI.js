@@ -123,3 +123,11 @@ export const sendHostPaddleVibration = (gameId) => {
 export const sendGuestPaddleVibration = (gameId) => {
   socket.emit(SocketEvent.SEND_GUEST_PADDLE_VIBRATION, gameId);
 };
+
+export const requestExitGame = () => {
+  socket.emit(SocketEvent.REQUEST_EXIT_GAME);
+};
+
+export const enterControllerGamePage = () => {
+  socket.emit(SocketEvent.ENTER_CONTROLLER_GAME_PAGE);
+};

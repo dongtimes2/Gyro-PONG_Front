@@ -19,6 +19,7 @@ import {
   sendAlpha,
   sendBeta,
   sendGamma,
+  requestExitGame,
 } from '../utils/socketAPI';
 
 export default function Controller() {
@@ -111,6 +112,10 @@ export default function Controller() {
       setControllerPage(ControllerPage.CONNECTION_SUCCESS);
     });
 
+    socket.on(SocketEvent.LOAD_CONTROLLER_GAME_PAGE, () => {
+      setControllerPage(ControllerPage.GAME);
+    });
+
     socket.on(SocketEvent.RECEIVE_GAME_ID, (gameId) => {
       sensorActivate();
       sendControllerJoinGame(gameId);
@@ -141,6 +146,7 @@ export default function Controller() {
       socket.off(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_DEFAULT_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_CONNECTION_SUCCESS_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_GAME_PAGE);
       socket.off(SocketEvent.RECEIVE_GAME_ID);
       socket.off(SocketEvent.RECEIVE_PADDLE_VIBRATION);
       socket.off(SocketEvent.RECEIVE_WIN_VIBRATION);
@@ -212,6 +218,11 @@ export default function Controller() {
     setControllerPage(ControllerPage.MOTION_SETTING);
   };
 
+  const handleExitGame = () => {
+    requestExitGame();
+    setControllerPage(ControllerPage.DEFAULT);
+  };
+
   return (
     <ControllerWrap>
       {controllerPage === ControllerPage.DEFAULT && (
@@ -281,6 +292,14 @@ export default function Controller() {
           <div className="header">세팅이 완료되었습니다</div>
           <button type="button" onClick={handleExit}>
             나가기
+          </button>
+        </>
+      )}
+      {controllerPage === ControllerPage.GAME && (
+        <>
+          <div className="header">게임 중입니다</div>
+          <button type="button" onClick={handleExitGame}>
+            게임 그만두기
           </button>
         </>
       )}

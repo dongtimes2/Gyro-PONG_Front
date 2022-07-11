@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import SocketEvent from '../constants/socket';
 import {
+  enterControllerGamePage,
   sendGuestLoseVibration,
   sendGuestPaddleVibration,
   sendGuestWin,
@@ -276,6 +277,7 @@ const Pong = ({ roomData, setting }) => {
       window.removeEventListener('resize', handleResize);
     };
 
+    enterControllerGamePage();
     socket.on(SocketEvent.RECEIVE_BETA, handlePaddleMove);
     window.addEventListener('resize', handleResize);
 

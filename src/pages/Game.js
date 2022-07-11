@@ -98,6 +98,7 @@ export default function Game() {
       height: gameRef.current.offsetHeight,
     });
 
+    socket.on(SocketEvent.RECEIVE_EXIT_GAME, navigateToLobby);
     socket.on(SocketEvent.RECEIVE_JOIN_ERROR, errorHandler);
     socket.on(SocketEvent.RECEIVE_ROOM_DATA, getData);
     socket.on(SocketEvent.RECEIVE_GO_TO_LOBBY, navigateToLobby);
@@ -107,6 +108,7 @@ export default function Game() {
 
     return () => {
       userExitGame(params.gameId);
+      socket.off(SocketEvent.RECEIVE_EXIT_GAME, navigateToLobby);
       socket.off(SocketEvent.RECEIVE_JOIN_ERROR, errorHandler);
       socket.off(SocketEvent.RECEIVE_ROOM_DATA, getData);
       socket.off(SocketEvent.RECEIVE_GO_TO_LOBBY, navigateToLobby);

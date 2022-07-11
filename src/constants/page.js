@@ -20,6 +20,7 @@ export const ControllerPage = {
   SETTING_FINISH: 'settingFinish',
   DEFAULT: 'default',
   CONNECTION_SUCCESS: 'connectionSuccess',
+  GAME: 'game',
 };
 
 Object.freeze(MotionSettingPage);
