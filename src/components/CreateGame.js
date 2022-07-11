@@ -39,6 +39,8 @@ const CreateGame = () => {
       isFull: false,
       userList: [],
       controllerList: [],
+      width: Number.MAX_SAFE_INTEGER,
+      height: Number.MAX_SAFE_INTEGER,
     });
 
     navigate(`/game/${gameId}`);

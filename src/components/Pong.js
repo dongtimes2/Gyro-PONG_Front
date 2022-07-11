@@ -14,8 +14,8 @@ import {
 const Pong = ({ roomData }) => {
   const wrapRef = useRef(null);
   const canvasRef = useRef(null);
-  const width = useRef(0);
-  const height = useRef(0);
+  const width = Math.floor(roomData.width / 10) * 10;
+  const height = Math.floor(roomData.height / 10) * 10;
   const isFrameMoving = useRef(true);
 
   useEffect(() => {
@@ -24,14 +24,11 @@ const Pong = ({ roomData }) => {
     const pixelRatio = window.devicePixelRatio ?? 1;
     let requestId = 0;
 
-    width.current = Math.floor(wrapRef.current.clientWidth / 10) * 10;
-    height.current = Math.floor(wrapRef.current.clientHeight / 10) * 10;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
 
-    canvas.style.width = width.current + 'px';
-    canvas.style.height = height.current + 'px';
-
-    canvas.width = width.current * pixelRatio;
-    canvas.height = height.current * pixelRatio;
+    canvas.width = width * pixelRatio;
+    canvas.height = height * pixelRatio;
 
     context.fillStyle = '#00ff2b';
     context.strokeStyle = '#00ff2b';
@@ -103,15 +100,11 @@ const Pong = ({ roomData }) => {
       context.stroke();
       context.closePath();
 
-      context.fillText(
-        getHostScore(),
-        canvas.width / 2 - canvas.width / 6,
-        canvas.height / 5,
-      );
+      context.fillText(getHostScore(), canvas.width / 4, canvas.height / 5);
 
       context.fillText(
         getGuestScore(),
-        canvas.width / 2 + canvas.width / 6,
+        canvas.width - canvas.width / 3,
         canvas.height / 5,
       );
 
@@ -282,6 +275,8 @@ const Pong = ({ roomData }) => {
     roomData.isNormalMode,
     roomData.isNormalTargetScore,
     roomData.gameId,
+    width,
+    height,
   ]);
 
   return (
@@ -293,9 +288,14 @@ const Pong = ({ roomData }) => {
 
 const CanvasWrap = styled.div`
   display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100%;
-  border: 1px solid white;
+
+  canvas {
+    border: 1px solid #00ff2b;
+  }
 `;
 
 Pong.propTypes = {

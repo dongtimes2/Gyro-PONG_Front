@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -27,6 +27,7 @@ export default function Game() {
   const [hasErrorOccurred, setHasErrorOccurred] = useState(false);
   const [roomData, setRoomData] = useState({});
   const user = useRecoilValue(userState);
+  const gameRef = useRef(null);
 
   const naviagte = useNavigate();
   const params = useParams();
@@ -89,6 +90,8 @@ export default function Game() {
     sendJoinGame({
       gameId: params.gameId,
       controllerId: user.controllerId,
+      width: gameRef.current.offsetWidth,
+      height: gameRef.current.offsetHeight,
     });
 
     socket.on(SocketEvent.RECEIVE_JOIN_ERROR, errorHandler);
@@ -128,7 +131,7 @@ export default function Game() {
 
   return (
     <>
-      <GameWrap>
+      <GameWrap ref={gameRef}>
         {hasErrorOccurred ? (
           <div className="error-area">
             <div>게임에 입장할 수 없습니다</div>
@@ -138,7 +141,6 @@ export default function Game() {
           <>
             {isGameStarted ? (
               <>
-                <div className="title-area">PONG</div>
                 <Pong roomData={roomData}></Pong>
               </>
             ) : (
