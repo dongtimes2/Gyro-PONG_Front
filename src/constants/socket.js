@@ -48,6 +48,9 @@ const SocketEvent = {
   SEND_GAMMA: 'sendGamma',
   SEND_HOST_WIN: 'sendHostWin',
   SEND_GUEST_WIN: 'sendGuestWin',
+  RECEIVE_HOST_WIN: 'receiveHostWin',
+  RECEIVE_GUEST_WIN: 'receiveGuestWin',
+  USER_EXIT_GAME: 'userExitGame',
 };
 
 Object.freeze(SocketEvent);

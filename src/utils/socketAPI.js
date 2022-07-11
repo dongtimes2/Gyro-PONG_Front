@@ -83,3 +83,7 @@ export const sendHostWin = (gameId) => {
 export const sendGuestWin = (gameId) => {
   socket.emit(SocketEvent.SEND_GUEST_WIN, gameId);
 };
+
+export const userExitGame = (gameId) => {
+  socket.emit(SocketEvent.USER_EXIT_GAME, gameId);
+};
