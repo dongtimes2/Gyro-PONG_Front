@@ -7,7 +7,7 @@ import { MotionSettingPage } from '../constants/page';
 import SocketEvent from '../constants/socket';
 import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
-import { enterMotionSettingPage, socket } from '../utils/socketAPI';
+import { enterControllerMotionSerringPage, socket } from '../utils/socketAPI';
 
 const MotionSetting = () => {
   const user = useRecoilValue(userState);
@@ -15,7 +15,7 @@ const MotionSetting = () => {
   const [currentPage, setCurrentPage] = useState(MotionSettingPage.INITIAL);
 
   useEffect(() => {
-    enterMotionSettingPage(user.controllerId);
+    enterControllerMotionSerringPage(user.controllerId);
 
     socket.on(SocketEvent.RECEIVE_MOTION_SETTING_BEGIN, () => {
       setCurrentPage(MotionSettingPage.TURN_LEFT);
@@ -30,22 +30,17 @@ const MotionSetting = () => {
 
     socket.on(SocketEvent.RECEIVE_RIGHT_DATA, (rightData) => {
       setSetting((prev) => {
-        return { ...prev, right: rightData };
-      });
-      setCurrentPage(MotionSettingPage.HEAD_FORWARD);
-    });
-
-    socket.on(SocketEvent.RECEIVE_FORWARD_DATA, (forwardData) => {
-      setSetting((prev) => {
-        return {
-          ...prev,
-          forward: forwardData,
-          isCompletedMotionSettings: true,
-        };
+        return { ...prev, right: rightData, isCompletedMotionSettings: true };
       });
       setCurrentPage(MotionSettingPage.FINISH);
     });
-  }, []);
+
+    return () => {
+      socket.off(SocketEvent.RECEIVE_MOTION_SETTING_BEGIN);
+      socket.off(SocketEvent.RECEIVE_LEFT_DATA);
+      socket.off(SocketEvent.RECEIVE_RIGHT_DATA);
+    };
+  }, [user.controllerId, setSetting]);
 
   return (
     <MotionSettingWrap>
@@ -60,7 +55,7 @@ const MotionSetting = () => {
             <div className="sub-area">
               <div>현재 세팅된 값은 다음과 같습니다.</div>
               <div>
-                좌: {setting.left} 우: {setting.right} 전방: {setting.forward}
+                좌: {setting.left} 우: {setting.right}
               </div>
             </div>
           )}
@@ -81,12 +76,6 @@ const MotionSetting = () => {
         </div>
       )}
 
-      {currentPage === MotionSettingPage.HEAD_FORWARD && (
-        <div className="header-area">
-          <div>기기를 편한 각도까지 전방을 향해 기울여주세요.</div>
-          <div>그 다음 확인 버튼을 눌러주세요.</div>
-        </div>
-      )}
       {currentPage === MotionSettingPage.FINISH && (
         <>
           <div className="header-area">
@@ -95,7 +84,7 @@ const MotionSetting = () => {
           <div className="result-area">
             <div>측정 결과</div>
             <div>
-              좌: {setting.left} 우: {setting.right} 전방: {setting.forward}
+              좌: {setting.left} 우: {setting.right}
             </div>
           </div>
         </>
