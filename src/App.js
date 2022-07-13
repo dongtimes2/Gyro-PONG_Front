@@ -67,7 +67,7 @@ function App() {
         return { ...prev, isCheckingCompatibility: false, isCompatible: false };
       });
     });
-  }, []);
+  }, [setUser, setSetting]);
 
   return (
     <>
