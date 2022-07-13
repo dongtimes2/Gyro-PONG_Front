@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import settingState from '../recoil/settingState';
 import controllerUrlGenerator from '../utils/controllerUrlGenerator';
+import { playClickSound } from '../utils/playSound';
 import urlCopier from '../utils/urlCopier';
 
 import Qrcode from './Qrcode';
@@ -12,14 +15,21 @@ const ConnectionInfo = ({
   isCheckingCompatibility,
   isCompatible,
 }) => {
+  const setting = useRecoilValue(settingState);
   const controllerUrl = controllerUrlGenerator(userId);
 
-  const handleCopyButtonClick = () => {
+  const handleCopyLink = () => {
     urlCopier(controllerUrl);
   };
 
+  const handleButtonSound = (event) => {
+    if (event.target.nodeName === 'BUTTON' && setting.isPlayingSFX) {
+      playClickSound();
+    }
+  };
+
   return (
-    <ConnectionInfoWrap>
+    <ConnectionInfoWrap onClick={handleButtonSound}>
       {isConnected ? (
         <>
           {isCheckingCompatibility && (
@@ -68,7 +78,7 @@ const ConnectionInfo = ({
             <div>{controllerUrl}</div>
           </div>
           <div className="button-area">
-            <button onClick={handleCopyButtonClick}>링크 복사하기</button>
+            <button onClick={handleCopyLink}>링크 복사하기</button>
           </div>
         </>
       )}
