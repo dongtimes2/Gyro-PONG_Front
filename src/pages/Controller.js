@@ -15,6 +15,11 @@ import {
   sendExit,
   switchMotionSettingPage,
   disconnectController,
+  sendControllerJoinGame,
+  sendAlpha,
+  sendBeta,
+  sendGamma,
+  requestExitGame,
 } from '../utils/socketAPI';
 
 export default function Controller() {
@@ -27,6 +32,49 @@ export default function Controller() {
   const isCompatibilityChecked = useRef(false);
 
   const params = useParams();
+
+  const compatibilityChecker = useCallback((event) => {
+    const result = getCompatibilityCheckHistory();
+
+    if (!result) {
+      compatibilityChecked();
+
+      if (!(event.alpha || event.beta || event.gamma)) {
+        controllerCompatibilityFailure();
+        return;
+      } else {
+        controllerCompatibilitySuccess();
+      }
+    }
+  }, []);
+
+  const handleOrientation = useCallback(
+    (event) => {
+      compatibilityChecker(event);
+      sensorValueSetter(event.alpha, event.beta, event.gamma);
+    },
+    [compatibilityChecker],
+  );
+
+  const sensorActivate = useCallback(async () => {
+    if (typeof DeviceOrientationEvent !== 'undefined') {
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        const response = await DeviceOrientationEvent.requestPermission();
+
+        if (response === 'granted') {
+          window.addEventListener('deviceorientation', handleOrientation);
+        }
+      } else {
+        window.addEventListener('deviceorientation', handleOrientation);
+      }
+    } else {
+      controllerCompatibilityFailure();
+    }
+  }, [handleOrientation]);
+
+  const sensorDeactivate = useCallback(() => {
+    window.removeEventListener('deviceorientation', handleOrientation);
+  }, [handleOrientation]);
 
   useEffect(() => {
     registerControllerId(params.userId);
@@ -53,6 +101,7 @@ export default function Controller() {
 
     socket.on(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE, () => {
       setControllerPage(ControllerPage.SETTING_FINISH);
+      sensorDeactivate();
     });
 
     socket.on(SocketEvent.LOAD_CONTROLLER_DEFAULT_PAGE, () => {
@@ -62,12 +111,70 @@ export default function Controller() {
     socket.on(SocketEvent.LOAD_CONTROLLER_CONNECTION_SUCCESS_PAGE, () => {
       setControllerPage(ControllerPage.CONNECTION_SUCCESS);
     });
-  }, []);
+
+    socket.on(SocketEvent.LOAD_CONTROLLER_GAME_PAGE, () => {
+      setControllerPage(ControllerPage.GAME);
+    });
+
+    socket.on(SocketEvent.RECEIVE_GAME_ID, (gameId) => {
+      sensorActivate();
+      sendControllerJoinGame(gameId);
+    });
+
+    socket.on(SocketEvent.RECEIVE_PADDLE_VIBRATION, () => {
+      window.navigator.vibrate([200]);
+    });
+
+    socket.on(SocketEvent.RECEIVE_WIN_VIBRATION, () => {
+      window.navigator.vibrate([200, 10, 200]);
+    });
+
+    socket.on(SocketEvent.RECEIVE_LOSE_VIBRATION, () => {
+      window.navigator.vibrate([700]);
+    });
+
+    socket.on(SocketEvent.CONTROLLER_EXIT_GAME, () => {
+      sensorDeactivate();
+    });
+
+    return () => {
+      socket.off(SocketEvent.LOAD_CONTROLLER_SENSOR_ACTIVATE_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_MOTION_SETTING_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_LEFT_SETTING_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_RIGHT_SETTING_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_FORWARD_SETTING_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_DEFAULT_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_CONNECTION_SUCCESS_PAGE);
+      socket.off(SocketEvent.LOAD_CONTROLLER_GAME_PAGE);
+      socket.off(SocketEvent.RECEIVE_GAME_ID);
+      socket.off(SocketEvent.RECEIVE_PADDLE_VIBRATION);
+      socket.off(SocketEvent.RECEIVE_WIN_VIBRATION);
+      socket.off(SocketEvent.RECEIVE_LOSE_VIBRATION);
+      socket.off(SocketEvent.CONTROLLER_EXIT_GAME);
+    };
+  }, [setControllerPage, params.userId, sensorActivate, sensorDeactivate]);
 
   const sensorValueSetter = (paramAlpha, paramBeta, paramGamma) => {
-    alpha.current = parseInt(paramAlpha);
-    beta.current = parseInt(paramBeta);
-    gamma.current = parseInt(paramGamma);
+    let intAlpha = parseInt(paramAlpha);
+    let intBeta = parseInt(paramBeta);
+    let intGamma = parseInt(paramGamma);
+
+    if (intAlpha !== alpha.current) {
+      sendAlpha(intAlpha);
+    }
+
+    if (intBeta !== beta.current) {
+      sendBeta(intBeta);
+    }
+
+    if (intGamma !== gamma.current) {
+      sendGamma(intGamma);
+    }
+
+    alpha.current = intAlpha;
+    beta.current = intBeta;
+    gamma.current = intGamma;
   };
 
   const getCompatibilityCheckHistory = () => {
@@ -78,51 +185,12 @@ export default function Controller() {
     isCompatibilityChecked.current = true;
   };
 
-  const compatibilityChecker = (event) => {
-    const result = getCompatibilityCheckHistory();
-
-    if (!result) {
-      compatibilityChecked();
-
-      if (!(event.alpha || event.beta || event.gamma)) {
-        controllerCompatibilityFailure();
-        return;
-      } else {
-        controllerCompatibilitySuccess();
-      }
-    }
-  };
-
-  const handleOrientation = useCallback((event) => {
-    compatibilityChecker(event);
-    sensorValueSetter(event.alpha, event.beta, event.gamma);
-  }, []);
-
-  const sensorActivate = async () => {
-    if (typeof DeviceOrientationEvent !== 'undefined') {
-      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-        const response = await DeviceOrientationEvent.requestPermission();
-
-        if (response === 'granted') {
-          window.addEventListener('deviceorientation', handleOrientation);
-        }
-      } else {
-        window.addEventListener('deviceorientation', handleOrientation);
-      }
-    } else {
-      controllerCompatibilityFailure();
-    }
-  };
-
-  const sensorDeactivate = () => {
-    window.removeEventListener('deviceorientation', handleOrientation);
-  };
-
   const handleActiveButtonClick = () => {
     sensorActivate();
   };
 
   const handleStartSettingButtonClick = () => {
+    sensorActivate();
     startMotionSetting();
   };
 
@@ -148,6 +216,11 @@ export default function Controller() {
   const handleSettingMotion = () => {
     switchMotionSettingPage();
     setControllerPage(ControllerPage.MOTION_SETTING);
+  };
+
+  const handleExitGame = () => {
+    requestExitGame();
+    setControllerPage(ControllerPage.DEFAULT);
   };
 
   return (
@@ -219,6 +292,14 @@ export default function Controller() {
           <div className="header">세팅이 완료되었습니다</div>
           <button type="button" onClick={handleExit}>
             나가기
+          </button>
+        </>
+      )}
+      {controllerPage === ControllerPage.GAME && (
+        <>
+          <div className="header">게임 중입니다</div>
+          <button type="button" onClick={handleExitGame}>
+            게임 그만두기
           </button>
         </>
       )}

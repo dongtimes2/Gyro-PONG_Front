@@ -20,7 +20,7 @@ export default function Main() {
 
       <div className="button-area">
         <Link to="/settings">설정</Link>
-        <Link to="/">게임 시작</Link>
+        <Link to="/lobby">게임 시작</Link>
         <Link to="/guides">도움말</Link>
       </div>
     </MainWrap>
