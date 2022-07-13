@@ -5,6 +5,11 @@ import styled from 'styled-components';
 
 import SocketEvent from '../constants/socket';
 import {
+  playExtinctionSound,
+  playWallHitSound,
+  playPaddleHitSound,
+} from '../utils/playSound';
+import {
   enterControllerGamePage,
   sendGuestLoseVibration,
   sendGuestPaddleVibration,
@@ -159,6 +164,8 @@ const Pong = ({ roomData, setting }) => {
           ballDeltaX *= 1.05;
           ballDeltaY *= 1.05;
         }
+
+        setting.isPlayingSFX && playWallHitSound();
       }
 
       if (ballBottom >= canvas.height) {
@@ -168,6 +175,8 @@ const Pong = ({ roomData, setting }) => {
           ballDeltaX *= 1.05;
           ballDeltaY *= 1.05;
         }
+
+        setting.isPlayingSFX && playWallHitSound();
       }
 
       if (ballLeft <= 0) {
@@ -180,6 +189,7 @@ const Pong = ({ roomData, setting }) => {
 
         setting.isVibrationMode && sendGuestWinVibration(roomData.gameId);
         setting.isVibrationMode && sendHostLoseVibration(roomData.gameId);
+        setting.isPlayingSFX && playExtinctionSound();
       }
 
       if (ballRight >= canvas.width) {
@@ -192,6 +202,7 @@ const Pong = ({ roomData, setting }) => {
 
         setting.isVibrationMode && sendGuestLoseVibration(roomData.gameId);
         setting.isVibrationMode && sendHostWinVibration(roomData.gameId);
+        setting.isPlayingSFX && playExtinctionSound();
       }
 
       if (
@@ -202,6 +213,7 @@ const Pong = ({ roomData, setting }) => {
       ) {
         ballDeltaX *= -1;
         setting.isVibrationMode && sendHostPaddleVibration(roomData.gameId);
+        setting.isPlayingSFX && playPaddleHitSound();
       }
 
       if (
@@ -212,6 +224,7 @@ const Pong = ({ roomData, setting }) => {
       ) {
         ballDeltaX *= -1;
         setting.isVibrationMode && sendGuestPaddleVibration(roomData.gameId);
+        setting.isPlayingSFX && playPaddleHitSound();
       }
 
       ballCenterX += ballDeltaX;
@@ -294,6 +307,7 @@ const Pong = ({ roomData, setting }) => {
     width,
     height,
     setting.isVibrationMode,
+    setting.isPlayingSFX,
   ]);
 
   return (

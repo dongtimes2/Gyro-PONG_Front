@@ -12,6 +12,11 @@ import SocketEvent from '../constants/socket';
 import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
 import {
+  playWinSound,
+  playloseSound,
+  playClickSound,
+} from '../utils/playSound';
+import {
   sendGameStart,
   sendJoinGame,
   sendRoomIsFull,
@@ -68,6 +73,9 @@ export default function Game() {
     const receiveHostWin = (data) => {
       if (user.id === data.hostId) {
         setIsUserWinner(true);
+        setting.isPlayingSFX && playWinSound();
+      } else {
+        setting.isPlayingSFX && playloseSound();
       }
 
       if (data.forfeit) {
@@ -81,6 +89,9 @@ export default function Game() {
     const receiveGuestWin = (data) => {
       if (user.id !== data.hostId) {
         setIsUserWinner(true);
+        setting.isPlayingSFX && playWinSound();
+      } else {
+        setting.isPlayingSFX && playloseSound();
       }
 
       if (data.forfeit) {
@@ -116,7 +127,13 @@ export default function Game() {
       socket.off(SocketEvent.RECEIVE_HOST_WIN, receiveHostWin);
       socket.off(SocketEvent.RECEIVE_GUEST_WIN, receiveGuestWin);
     };
-  }, [params.gameId, user.id, user.controllerId, naviagte]);
+  }, [
+    params.gameId,
+    user.id,
+    user.controllerId,
+    naviagte,
+    setting.isPlayingSFX,
+  ]);
 
   const guestLeft = () => {
     naviagte('/lobby');
@@ -135,9 +152,18 @@ export default function Game() {
     isForfeit && naviagte('/lobby');
   };
 
+  const handleButtonSound = (event) => {
+    if (
+      (event.target.nodeName === 'A' || event.target.nodeName === 'BUTTON') &&
+      setting.isPlayingSFX
+    ) {
+      playClickSound();
+    }
+  };
+
   return (
     <>
-      <GameWrap ref={gameRef}>
+      <GameWrap ref={gameRef} onClick={handleButtonSound}>
         {hasErrorOccurred ? (
           <div className="error-area">
             <div>게임에 입장할 수 없습니다</div>
