@@ -24,8 +24,8 @@ export const controllerCompatibilityFailure = () => {
   socket.emit(SocketEvent.CONTROLLER_COMPATIBILITY_FAILURE);
 };
 
-export const enterMotionSettingPage = (deviceId) => {
-  socket.emit(SocketEvent.ENTER_MOTION_SETTING_PAGE, deviceId);
+export const enterControllerMotionSerringPage = (deviceId) => {
+  socket.emit(SocketEvent.ENTER_CONTROLLER_MOTION_SETTING_PAGE, deviceId);
 };
 
 export const startMotionSetting = () => {
@@ -64,16 +64,8 @@ export const sendControllerJoinGame = (gameId) => {
   socket.emit(SocketEvent.SEND_CONTROLLER_JOIN_GAME, gameId);
 };
 
-export const sendAlpha = (alpha) => {
-  socket.emit(SocketEvent.SEND_ALPHA, alpha);
-};
-
 export const sendBeta = (beta) => {
   socket.emit(SocketEvent.SEND_BETA, beta);
-};
-
-export const sendGamma = (gamma) => {
-  socket.emit(SocketEvent.SEND_GAMMA, gamma);
 };
 
 export const sendHostWin = (gameId) => {
@@ -130,4 +122,28 @@ export const requestExitGame = () => {
 
 export const enterControllerGamePage = () => {
   socket.emit(SocketEvent.ENTER_CONTROLLER_GAME_PAGE);
+};
+
+export const sendMoveUp = () => {
+  socket.emit(SocketEvent.SEND_MOVE_UP);
+};
+
+export const sendMoveDown = () => {
+  socket.emit(SocketEvent.SEND_MOVE_DOWN);
+};
+
+export const sendMoveLeft = () => {
+  socket.emit(SocketEvent.SEND_MOVE_LEFT);
+};
+
+export const sendMoveRight = () => {
+  socket.emit(SocketEvent.SEND_MOVE_RIGHT);
+};
+
+export const sendMotionChangingModeState = (data) => {
+  socket.emit(SocketEvent.SEND_MOTION_CHANGING_MODE_STATE, data);
+};
+
+export const sendStopDetectMotion = () => {
+  socket.emit(SocketEvent.SEND_STOP_DETECT_MOTION);
 };

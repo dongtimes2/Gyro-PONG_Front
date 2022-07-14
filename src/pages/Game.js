@@ -135,11 +135,11 @@ export default function Game() {
     setting.isPlayingSFX,
   ]);
 
-  const guestLeft = () => {
+  const handleGuestExit = () => {
     naviagte('/lobby');
   };
 
-  const hostLeft = () => {
+  const handleHostExit = () => {
     naviagte('/lobby');
   };
 
@@ -184,11 +184,11 @@ export default function Game() {
                     ) : (
                       <Loading />
                     )}
-                    <button onClick={hostLeft}>방 삭제하고 나가기</button>
+                    <button onClick={handleHostExit}>방 삭제하고 나가기</button>
                   </>
                 ) : (
                   <>
-                    <button onClick={guestLeft}>나가기</button>
+                    <button onClick={handleGuestExit}>나가기</button>
                   </>
                 )}
               </div>

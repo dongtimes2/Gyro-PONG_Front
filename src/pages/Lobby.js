@@ -9,12 +9,13 @@ import ModalPortal from '../components/ModalPortal';
 import Modal from '../components/Mordal';
 import SocketEvent from '../constants/socket';
 import settingState from '../recoil/settingState';
-import playClickSound from '../utils/playClickSound';
+import { playClickSound } from '../utils/playSound';
 import { requestGameList, socket } from '../utils/socketAPI';
 
 export default function Lobby() {
   const [isShowingModal, setIsShowingModal] = useState(false);
   const [gameList, setGameLIst] = useState([]);
+  const [motionValueList, setMotionValueList] = useState([]);
   const setting = useRecoilValue(settingState);
 
   const navigate = useNavigate();
@@ -32,6 +33,53 @@ export default function Lobby() {
       socket.off(SocketEvent.RECEIVE_GAME_ROOM_LIST, gameListSetter);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isShowingModal) {
+      socket.on(SocketEvent.RECEIVE_MOVE_UP, () => {
+        setMotionValueList((prev) => [...prev, '🡹']);
+      });
+
+      socket.on(SocketEvent.RECEIVE_MOVE_DOWN, () => {
+        setMotionValueList((prev) => [...prev, '🡻']);
+      });
+
+      socket.on(SocketEvent.RECEIVE_MOVE_LEFT, () => {
+        setMotionValueList((prev) => [...prev, '🡸']);
+      });
+
+      socket.on(SocketEvent.RECEIVE_MOVE_RIGHT, () => {
+        setMotionValueList((prev) => [...prev, '🡺']);
+      });
+
+      socket.on(SocketEvent.RECEIVE_STOP_DETECT_MOTION, () => {
+        setMotionValueList([]);
+      });
+    }
+
+    return () => {
+      socket.off(SocketEvent.RECEIVE_MOVE_UP);
+      socket.off(SocketEvent.RECEIVE_MOVE_DOWN);
+      socket.off(SocketEvent.RECEIVE_MOVE_LEFT);
+      socket.off(SocketEvent.RECEIVE_MOVE_RIGHT);
+      socket.off(SocketEvent.RECEIVE_STOP_DETECT_MOTION);
+    };
+  }, [isShowingModal]);
+
+  useEffect(() => {
+    if (motionValueList[0] === '🡸' && motionValueList[1] === '🡺') {
+      setTimeout(() => {
+        handleShowModal();
+        setMotionValueList([]);
+      }, 500);
+    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
+      setTimeout(() => {
+        navigate('/');
+      }, 500);
+    } else if (motionValueList.length >= 2) {
+      setMotionValueList([]);
+    }
+  }, [motionValueList, navigate]);
 
   const handleShowModal = () => {
     setIsShowingModal(true);
@@ -90,10 +138,19 @@ export default function Lobby() {
         </div>
         <div className="button-area">
           <button type="button" onClick={handleShowModal}>
+            {setting.isChangedPageByMotion && <span>&#129144; &#129146;</span>}{' '}
             게임 생성하기
           </button>
-          <Link to="/">뒤로가기</Link>
+          <Link to="/">
+            {setting.isChangedPageByMotion && <span>&#129145; &#129144;</span>}{' '}
+            뒤로가기
+          </Link>
         </div>
+        {setting.isChangedPageByMotion && (
+          <>
+            <div className="motion-value-area">{motionValueList}</div>
+          </>
+        )}
       </LobbyWrap>
 
       {isShowingModal && (
@@ -199,7 +256,14 @@ const LobbyWrap = styled.div`
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    flex-basis: 20%;
+    flex-basis: 15%;
+  }
+
+  .motion-value-area {
+    display: flex;
+    justify-content: center;
+    flex-basis: 5%;
+    font-size: 30px;
   }
 
   a {
