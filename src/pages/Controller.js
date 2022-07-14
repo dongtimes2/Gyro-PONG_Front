@@ -16,45 +16,134 @@ import {
   switchMotionSettingPage,
   disconnectController,
   sendControllerJoinGame,
-  sendAlpha,
   sendBeta,
-  sendGamma,
   requestExitGame,
+  sendMoveUp,
+  sendMoveDown,
+  sendMoveLeft,
+  sendMoveRight,
+  sendStopDetectMotion,
 } from '../utils/socketAPI';
 
 export default function Controller() {
   const [controllerPage, setControllerPage] = useState(ControllerPage.DEFAULT);
+  const [isMotionChangingMode, setIsMotionChangingMode] = useState(false);
+  const [isDetectingMotion, setIsDetectingMotion] = useState(false);
 
-  const alpha = useRef(0);
-  const beta = useRef(0);
-  const gamma = useRef(0);
+  const [alpha, setAlpha] = useState(0);
+  const [beta, setBeta] = useState(0);
+  const betaCache = useRef(0);
+
+  const startX = useRef(0);
+  const startY = useRef(0);
+
+  const topBorder = useRef(0);
+  const bottomBorder = useRef(0);
+  const leftBorder = useRef(0);
+  const rightBorder = useRef(0);
+  const lastInput = useRef('');
 
   const isCompatibilityChecked = useRef(false);
+  const initialCheck = useRef(true);
 
   const params = useParams();
 
-  const compatibilityChecker = useCallback((event) => {
-    const result = getCompatibilityCheckHistory();
+  const deviceMotionEmitter = (paramAlpha, paramBeta) => {
+    if (isDetectingMotion) {
+      let sendCheck = true;
 
-    if (!result) {
-      compatibilityChecked();
-
-      if (!(event.alpha || event.beta || event.gamma)) {
-        controllerCompatibilityFailure();
-        return;
-      } else {
-        controllerCompatibilitySuccess();
+      if (paramAlpha > 180) {
+        paramAlpha -= 361;
       }
-    }
-  }, []);
 
-  const handleOrientation = useCallback(
-    (event) => {
-      compatibilityChecker(event);
-      sensorValueSetter(event.alpha, event.beta, event.gamma);
-    },
-    [compatibilityChecker],
-  );
+      if (initialCheck.current) {
+        startX.current = paramAlpha;
+        startY.current = paramBeta;
+        initialCheck.current = false;
+      }
+
+      topBorder.current = startY.current + 20;
+      bottomBorder.current = startY.current - 20;
+
+      leftBorder.current = startX.current + 20;
+      rightBorder.current = startX.current - 20;
+
+      if (paramBeta > topBorder.current) {
+        if (lastInput.current !== 'up') {
+          lastInput.current = 'up';
+          sendMoveUp();
+        }
+      } else if (paramBeta < bottomBorder.current) {
+        if (lastInput.current !== 'down') {
+          lastInput.current = 'down';
+          sendMoveDown();
+        }
+      } else if (paramAlpha > leftBorder.current) {
+        if (lastInput.current !== 'left') {
+          lastInput.current = 'left';
+          sendMoveLeft();
+        }
+      } else if (paramAlpha < rightBorder.current) {
+        if (lastInput.current !== 'right') {
+          lastInput.current = 'right';
+          sendMoveRight();
+        }
+      } else {
+        sendCheck = false;
+      }
+
+      if (sendCheck) {
+        startX.current = paramAlpha;
+        startY.current = paramBeta;
+      }
+    } else {
+      lastInput.current = '';
+      initialCheck.current = true;
+    }
+  };
+
+  const sensorValueEmitter = (paramBeta) => {
+    if (betaCache.current !== paramBeta) {
+      sendBeta(paramBeta);
+      betaCache.current = paramBeta;
+    }
+  };
+
+  const getCompatibilityCheckHistory = () => {
+    return isCompatibilityChecked.current;
+  };
+
+  const compatibilityChecked = () => {
+    isCompatibilityChecked.current = true;
+  };
+
+  const handleOrientation = useCallback((event) => {
+    const compatibilityChecker = (event) => {
+      const result = getCompatibilityCheckHistory();
+
+      if (!result) {
+        compatibilityChecked();
+
+        if (!(event.alpha || event.beta)) {
+          controllerCompatibilityFailure();
+          return;
+        } else {
+          controllerCompatibilitySuccess();
+        }
+      }
+    };
+
+    const sensorValueSetter = (paramAlpha, paramBeta) => {
+      let intAlpha = parseInt(paramAlpha);
+      let intBeta = parseInt(paramBeta);
+
+      setAlpha(intAlpha);
+      setBeta(intBeta);
+    };
+
+    compatibilityChecker(event);
+    sensorValueSetter(event.alpha, event.beta);
+  }, []);
 
   const sensorActivate = useCallback(async () => {
     if (typeof DeviceOrientationEvent !== 'undefined') {
@@ -114,10 +203,10 @@ export default function Controller() {
 
     socket.on(SocketEvent.LOAD_CONTROLLER_GAME_PAGE, () => {
       setControllerPage(ControllerPage.GAME);
+      sensorActivate();
     });
 
     socket.on(SocketEvent.RECEIVE_GAME_ID, (gameId) => {
-      sensorActivate();
       sendControllerJoinGame(gameId);
     });
 
@@ -133,9 +222,18 @@ export default function Controller() {
       window.navigator.vibrate([700]);
     });
 
-    socket.on(SocketEvent.CONTROLLER_EXIT_GAME, () => {
-      sensorDeactivate();
-    });
+    socket.on(
+      SocketEvent.RECEIVE_MOTION_CHANGING_MODE_STATE,
+      (isModeActivated) => {
+        if (isModeActivated) {
+          sensorActivate();
+        } else {
+          sensorDeactivate();
+        }
+
+        setIsMotionChangingMode(isModeActivated);
+      },
+    );
 
     return () => {
       socket.off(SocketEvent.LOAD_CONTROLLER_SENSOR_ACTIVATE_PAGE);
@@ -151,69 +249,35 @@ export default function Controller() {
       socket.off(SocketEvent.RECEIVE_PADDLE_VIBRATION);
       socket.off(SocketEvent.RECEIVE_WIN_VIBRATION);
       socket.off(SocketEvent.RECEIVE_LOSE_VIBRATION);
-      socket.off(SocketEvent.CONTROLLER_EXIT_GAME);
+      socket.off(SocketEvent.RECEIVE_MOTION_CHANGING_MODE_STATE);
     };
-  }, [setControllerPage, params.userId, sensorActivate, sensorDeactivate]);
+  }, [params.userId, sensorActivate, sensorDeactivate]);
 
-  const sensorValueSetter = (paramAlpha, paramBeta, paramGamma) => {
-    let intAlpha = parseInt(paramAlpha);
-    let intBeta = parseInt(paramBeta);
-    let intGamma = parseInt(paramGamma);
-
-    if (intAlpha !== alpha.current) {
-      sendAlpha(intAlpha);
-    }
-
-    if (intBeta !== beta.current) {
-      sendBeta(intBeta);
-    }
-
-    if (intGamma !== gamma.current) {
-      sendGamma(intGamma);
-    }
-
-    alpha.current = intAlpha;
-    beta.current = intBeta;
-    gamma.current = intGamma;
-  };
-
-  const getCompatibilityCheckHistory = () => {
-    return isCompatibilityChecked.current;
-  };
-
-  const compatibilityChecked = () => {
-    isCompatibilityChecked.current = true;
-  };
-
-  const handleActiveButtonClick = () => {
+  const handleStartActivation = () => {
     sensorActivate();
   };
 
-  const handleStartSettingButtonClick = () => {
+  const handleStartMotionSetting = () => {
     sensorActivate();
     startMotionSetting();
   };
 
-  const handleBetaValueSettingButtonClick = () => {
-    sendSensorData({ type: controllerPage, value: beta.current });
+  const handleBetaValueSetting = () => {
+    sendSensorData({ type: controllerPage, value: beta });
   };
 
-  const handleGammaValueSettingButtonClick = () => {
-    sendSensorData({ type: controllerPage, value: gamma.current });
-  };
-
-  const handleActivationExit = () => {
+  const handleExitActivation = () => {
     sendExit();
     disconnectController();
     setControllerPage(ControllerPage.DEFAULT);
   };
 
-  const handleExit = () => {
+  const handleExitSetting = () => {
     sendExit();
     setControllerPage(ControllerPage.DEFAULT);
   };
 
-  const handleSettingMotion = () => {
+  const handleEnterMotionSettingPage = () => {
     switchMotionSettingPage();
     setControllerPage(ControllerPage.MOTION_SETTING);
   };
@@ -223,20 +287,43 @@ export default function Controller() {
     setControllerPage(ControllerPage.DEFAULT);
   };
 
+  const handleDetectMotion = () => {
+    setIsDetectingMotion(true);
+  };
+
+  const handleStopDetectMotion = () => {
+    setIsDetectingMotion(false);
+    sendStopDetectMotion();
+  };
+
+  controllerPage === ControllerPage.GAME && sensorValueEmitter(beta);
+  controllerPage === ControllerPage.DEFAULT && deviceMotionEmitter(alpha, beta);
+
   return (
     <ControllerWrap>
       {controllerPage === ControllerPage.DEFAULT && (
         <>
           <div className="header">모바일 컨트롤러</div>
+          {isMotionChangingMode && (
+            <>
+              {isDetectingMotion ? (
+                <button onClick={handleStopDetectMotion}>
+                  모션감지 멈추기
+                </button>
+              ) : (
+                <button onClick={handleDetectMotion}>모션감지 활성화</button>
+              )}
+            </>
+          )}
         </>
       )}
       {controllerPage === ControllerPage.SENSOR_ACTIVATE && (
         <>
           <div className="header">활성화 버튼을 눌러주세요</div>
-          <button type="button" onClick={handleActiveButtonClick}>
+          <button type="button" onClick={handleStartActivation}>
             자이로 센서 활성화
           </button>
-          <button type="button" onClick={handleActivationExit}>
+          <button type="button" onClick={handleExitActivation}>
             나가기
           </button>
         </>
@@ -244,10 +331,10 @@ export default function Controller() {
       {controllerPage === ControllerPage.CONNECTION_SUCCESS && (
         <>
           <div className="header">연결에 성공하였습니다.</div>
-          <button type="button" onClick={handleSettingMotion}>
+          <button type="button" onClick={handleEnterMotionSettingPage}>
             움직임 범위 설정하기
           </button>
-          <button type="button" onClick={handleExit}>
+          <button type="button" onClick={handleExitSetting}>
             나가기
           </button>
         </>
@@ -255,10 +342,10 @@ export default function Controller() {
       {controllerPage === ControllerPage.MOTION_SETTING && (
         <>
           <div className="header">시작하기 버튼을 눌러주세요</div>
-          <button type="button" onClick={handleStartSettingButtonClick}>
+          <button type="button" onClick={handleStartMotionSetting}>
             측정 시작하기
           </button>
-          <button type="button" onClick={handleExit}>
+          <button type="button" onClick={handleExitSetting}>
             나가기
           </button>
         </>
@@ -266,7 +353,7 @@ export default function Controller() {
       {controllerPage === ControllerPage.TURN_LEFT && (
         <>
           <div className="header">기기를 왼쪽으로 기울여주세요</div>
-          <button type="button" onClick={handleBetaValueSettingButtonClick}>
+          <button type="button" onClick={handleBetaValueSetting}>
             확인
           </button>
         </>
@@ -274,15 +361,7 @@ export default function Controller() {
       {controllerPage === ControllerPage.TURN_RIGHT && (
         <>
           <div className="header">기기를 오른쪽으로 기울여주세요</div>
-          <button type="button" onClick={handleBetaValueSettingButtonClick}>
-            확인
-          </button>
-        </>
-      )}
-      {controllerPage === ControllerPage.HEAD_FORWARD && (
-        <>
-          <div className="header">기기를 전방으로 기울여주세요</div>
-          <button type="button" onClick={handleGammaValueSettingButtonClick}>
+          <button type="button" onClick={handleBetaValueSetting}>
             확인
           </button>
         </>
@@ -290,7 +369,7 @@ export default function Controller() {
       {controllerPage === ControllerPage.SETTING_FINISH && (
         <>
           <div className="header">세팅이 완료되었습니다</div>
-          <button type="button" onClick={handleExit}>
+          <button type="button" onClick={handleExitSetting}>
             나가기
           </button>
         </>

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
@@ -12,26 +12,19 @@ import { ModalContentPage } from '../constants/page';
 import SocketEvent from '../constants/socket';
 import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
-import playClickSound from '../utils/playClickSound';
-import { socket } from '../utils/socketAPI';
+import { playClickSound, musicController } from '../utils/playSound';
+import { sendMotionChangingModeState, socket } from '../utils/socketAPI';
 
 export default function Settings() {
   const [setting, setSetting] = useRecoilState(settingState);
   const user = useRecoilValue(userState);
   const [isShowingModal, setIsShowingModal] = useState(false);
   const [modalContentPage, setModalContentPage] = useState('');
+  const [motionValueList, setMotionValueList] = useState([]);
 
-  useEffect(() => {
-    socket.on(SocketEvent.RECEIVE_EXIT, () => {
-      handleCloseModalButtonClick();
-    });
+  const navigate = useNavigate();
 
-    socket.on(SocketEvent.RECEIVE_SWITCH_MOTION_SETTING_PAGE, () => {
-      handleMotionButtonClick();
-    });
-  }, []);
-
-  const handleToggleButtonClick = (event) => {
+  const handleToggleButton = (event) => {
     switch (event.target.name) {
       case 'vibration':
         setSetting({
@@ -62,21 +55,21 @@ export default function Settings() {
     }
   };
 
-  const handleCloseModalButtonClick = () => {
+  const handleCloseModal = useCallback(() => {
     if (setting.isPlayingSFX) {
       playClickSound();
     }
 
     setModalContentPage('');
     setIsShowingModal(false);
-  };
+  }, [setting.isPlayingSFX]);
 
-  const handleConnectionButtonClick = () => {
+  const handleSetConnection = () => {
     setModalContentPage(ModalContentPage.CONNECTION);
     setIsShowingModal(true);
   };
 
-  const handleMotionButtonClick = () => {
+  const handleSetMotion = () => {
     setModalContentPage(ModalContentPage.MOTION);
     setIsShowingModal(true);
   };
@@ -90,17 +83,73 @@ export default function Settings() {
     }
   };
 
+  useEffect(() => {
+    setting.isCompatible &&
+      sendMotionChangingModeState({
+        state: setting.isChangedPageByMotion,
+        controllerId: user.controllerId,
+      });
+  }, [setting.isChangedPageByMotion, setting.isCompatible, user.controllerId]);
+
+  useEffect(() => {
+    socket.on(SocketEvent.RECEIVE_MOVE_UP, () => {
+      setMotionValueList((prev) => [...prev, '🡹']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_MOVE_DOWN, () => {
+      setMotionValueList((prev) => [...prev, '🡻']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_MOVE_LEFT, () => {
+      setMotionValueList((prev) => [...prev, '🡸']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_MOVE_RIGHT, () => {
+      setMotionValueList((prev) => [...prev, '🡺']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_STOP_DETECT_MOTION, () => {
+      setMotionValueList([]);
+    });
+
+    socket.on(SocketEvent.RECEIVE_EXIT, () => {
+      handleCloseModal();
+    });
+
+    socket.on(SocketEvent.RECEIVE_SWITCH_MOTION_SETTING_PAGE, () => {
+      handleSetMotion();
+    });
+
+    return () => {
+      socket.off(SocketEvent.RECEIVE_EXIT);
+      socket.off(SocketEvent.RECEIVE_SWITCH_MOTION_SETTING_PAGE);
+      socket.off(SocketEvent.RECEIVE_MOVE_UP);
+      socket.off(SocketEvent.RECEIVE_MOVE_DOWN);
+      socket.off(SocketEvent.RECEIVE_MOVE_LEFT);
+      socket.off(SocketEvent.RECEIVE_MOVE_RIGHT);
+      socket.off(SocketEvent.RECEIVE_STOP_DETECT_MOTION);
+    };
+  }, [handleCloseModal]);
+
+  useEffect(() => {
+    if (motionValueList[0] === '🡻' && motionValueList[1] === '🡺') {
+      setTimeout(() => {
+        navigate('/');
+      }, 500);
+    } else if (motionValueList.length >= 2) {
+      setMotionValueList([]);
+    }
+  }, [motionValueList, navigate]);
+
+  musicController(setting.isPlayingMusic);
+
   return (
     <>
       <SettingsWrap onClick={handleButtonSound}>
         <div className="title-area">| Settings |</div>
         <div className="content-area">
           <div className="toggle-button-area">
-            <button
-              type="button"
-              name="vibration"
-              onClick={handleToggleButtonClick}
-            >
+            <button type="button" name="vibration" onClick={handleToggleButton}>
               진동
             </button>
             <div className="status-box">
@@ -108,11 +157,7 @@ export default function Settings() {
             </div>
           </div>
           <div className="toggle-button-area">
-            <button
-              type="button"
-              name="music"
-              onClick={handleToggleButtonClick}
-            >
+            <button type="button" name="music" onClick={handleToggleButton}>
               배경음악
             </button>
             <div className="status-box">
@@ -120,40 +165,44 @@ export default function Settings() {
             </div>
           </div>
           <div className="toggle-button-area">
-            <button type="button" name="sfx" onClick={handleToggleButtonClick}>
+            <button type="button" name="sfx" onClick={handleToggleButton}>
               효과음
             </button>
             <div className="status-box">{setting.isPlayingSFX ? 'O' : 'X'}</div>
           </div>
           <div className="toggle-button-area">
-            <button
-              type="button"
-              name="motion"
-              onClick={handleToggleButtonClick}
-            >
+            <button type="button" name="motion" onClick={handleToggleButton}>
               컨트롤러 움직임으로 메뉴 이동하기
             </button>
             <div className="status-box">
               {setting.isChangedPageByMotion ? 'O' : 'X'}
             </div>
           </div>
-          <button type="button" onClick={handleConnectionButtonClick}>
+          <button type="button" onClick={handleSetConnection}>
             컨트롤러 연결 설정
           </button>
           {setting.isCompatible && (
-            <button type="button" onClick={handleMotionButtonClick}>
+            <button type="button" onClick={handleSetMotion}>
               컨트롤러 움직임 범위 설정
             </button>
           )}
         </div>
         <div className="button-area">
-          <Link to="/">메인 화면으로 돌아가기</Link>
+          <Link to="/">
+            {setting.isChangedPageByMotion && <span>&#129147; &#129146;</span>}{' '}
+            메인 화면으로 돌아가기
+          </Link>
         </div>
+        {setting.isChangedPageByMotion && (
+          <>
+            <div className="motion-value-area">{motionValueList}</div>
+          </>
+        )}
       </SettingsWrap>
 
       {isShowingModal && (
         <ModalPortal>
-          <Modal onClose={handleCloseModalButtonClick}>
+          <Modal onClose={handleCloseModal}>
             <ModalContentWrap>
               {modalContentPage === ModalContentPage.CONNECTION && (
                 <ConnectionInfo
@@ -167,7 +216,7 @@ export default function Settings() {
                 <MotionSetting />
               )}
               <div className="button-area">
-                <button type="button" onClick={handleCloseModalButtonClick}>
+                <button type="button" onClick={handleCloseModal}>
                   나가기
                 </button>
               </div>
@@ -238,7 +287,14 @@ const SettingsWrap = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-basis: 25%;
+    flex-basis: 15%;
+  }
+
+  .motion-value-area {
+    display: flex;
+    align-items: center;
+    flex-basis: 10%;
+    font-size: 30px;
   }
 
   .toggle-button-area {
@@ -261,7 +317,7 @@ const SettingsWrap = styled.div`
     font-size: 40px;
   }
 
-  a {
+  .button-area a {
     padding: 20px 50px;
     font-size: 30px;
   }

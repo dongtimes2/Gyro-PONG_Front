@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
-import playClickSound from '../utils/playClickSound';
+import { playClickSound } from '../utils/playSound';
 import { createGame } from '../utils/socketAPI';
 
 const CreateGame = () => {
@@ -76,8 +76,6 @@ const CreateGame = () => {
   );
 };
 
-export default CreateGame;
-
 const CreateGameWrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -137,3 +135,5 @@ const CreateGameWrap = styled.div`
     padding: 5px 60px;
   }
 `;
+
+export default CreateGame;
