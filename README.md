@@ -1,6 +1,6 @@
 # Gyro-PONG
 
-![title](/readme_assets/title.JPG)
+![title](/readme_assets/title.jpg)
 gyro-pong은 모바일 기기의 자이로 센서를 이용하여 PONG 게임을 할 수 있는 웹 사이트입니다.  
 즉 모바일 기기의 기울임으로서 게임을 플레이할 수 있습니다.
 
@@ -92,7 +92,7 @@ gyro-pong은 모바일 기기의 자이로 센서를 이용하여 PONG 게임을
 위에서 언급하였듯, 유저마다 최대로 모바일 기기를 움직이는 각도가 다르기 때문에,  
 같은 기울임 수치를 가지더라도 Paddle의 위치는 유저별로 달라지게 됩니다.
 
-게임을 플레이 하는, 각기 다른 사양의 모니터와 서로 다른 기울임 수치를 가진 모든 유저에게
+게임을 플레이 하는, 각기 다른 사양의 모니터와 서로 다른 기울임 수치를 가진 모든 유저에게  
 동일한 비율의 화면 구성을 보여주어야 하기 때문에 이를 계산하는게 무척 까다로웠습니다.
 
 문제를 해결하기 위해, 게임에 참가한 각 유저들의 브라우저 창 사이즈를 측정하였습니다.  
@@ -106,7 +106,7 @@ gyro-pong은 모바일 기기의 자이로 센서를 이용하여 PONG 게임을
 
 &nbsp;
 
-$${Paddle\,end\,position} = \frac{display\,height - paddle\,length}{lower\,tilt\,limit - upper\,tilt\,limit}\times Paddle\,start\,position - \frac{(display\,height - paddle\,length)\times upper\,tilt\,limit}{lower\,tilt\,limit - upper\,tilt\,limit}$$
+${PaddleEndPosition} = \frac{displayHeight - paddleLength}{lowerTiltLimit - upperTiltLimit}\times PaddleStartPosition - \frac{(displayHeight - paddleLength)\times upperTiltLimit}{lowerTiltLimit - upperTiltLimit}$
 
 &nbsp;
 
@@ -135,31 +135,31 @@ $${Paddle\,end\,position} = \frac{display\,height - paddle\,length}{lower\,tilt\
 
 ## 실행방법
 
-가장 먼저 접속할 경우 모바일 기기의 연동이 필요합니다.
-화면에 표시된 주소, 혹은 QR코드를 이용하여 모바일 기기를 접속시켜주세요
-![connection](/readme_assets/connection.JPG)
+가장 먼저 접속할 경우 모바일 기기의 연동이 필요합니다.  
+화면에 표시된 주소, 혹은 QR코드를 이용하여 모바일 기기를 접속시켜주세요  
+![connection](/readme_assets/connection.jpg)
 
 &nbsp;
 
-지시에 따라 폰을 좌우로 기울여주세요
+지시에 따라 폰을 좌우로 기울여주세요  
 ![setting](/readme_assets/setting.gif)
 
 &nbsp;
 
-방을 생성하여 만들거나, 상대방이 생성한 방에 들어갈 수 있습니다.
-![gameList](/readme_assets/gameList.JPG)
+방을 생성하여 만들거나, 상대방이 생성한 방에 들어갈 수 있습니다.  
+![gameList](/readme_assets/gameList.jpg)
 
 &nbsp;
 
 모바일 기기를 가로로 잡고 플레이해주세요.  
-나에게 향해오는 공을 튕겨야 합니다.
+나에게 향해오는 공을 튕겨야 합니다.  
 ![gamePlay](/readme_assets/gamePlay.gif)
 
 &nbsp;
 
 모바일 기기의 움직임을 이용하여 화면을 전환하고 싶을 경우  
-환경설정에서 해당 옵션을 선택해주세요.
-이후 모바일 기기를 세로로 잡고 움직이면 이를 감지합니다.
+환경설정에서 해당 옵션을 선택해주세요.  
+이후 모바일 기기를 세로로 잡고 움직이면 이를 감지합니다.  
 ![movePage](/readme_assets/movePage.gif)
 
 &nbsp;
