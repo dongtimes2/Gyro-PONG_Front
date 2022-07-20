@@ -102,12 +102,13 @@ export default function Game() {
       setIsGameStarted(false);
     };
 
-    sendJoinGame({
-      gameId: params.gameId,
-      controllerId: user.controllerId,
-      width: gameRef.current.offsetWidth,
-      height: gameRef.current.offsetHeight,
-    });
+    setting.isCompletedMotionSettings &&
+      sendJoinGame({
+        gameId: params.gameId,
+        controllerId: user.controllerId,
+        width: gameRef.current.offsetWidth,
+        height: gameRef.current.offsetHeight,
+      });
 
     socket.on(SocketEvent.RECEIVE_EXIT_GAME, navigateToLobby);
     socket.on(SocketEvent.RECEIVE_JOIN_ERROR, errorHandler);
@@ -133,6 +134,7 @@ export default function Game() {
     user.controllerId,
     naviagte,
     setting.isPlayingSFX,
+    setting.isCompletedMotionSettings,
   ]);
 
   const handleGuestExit = () => {
@@ -164,7 +166,7 @@ export default function Game() {
   return (
     <>
       <GameWrap ref={gameRef} onClick={handleButtonSound}>
-        {hasErrorOccurred ? (
+        {hasErrorOccurred || !setting.isCompletedMotionSettings ? (
           <div className="error-area">
             <div>게임에 입장할 수 없습니다</div>
             <Link to="/lobby">나가기</Link>
@@ -173,7 +175,11 @@ export default function Game() {
           <>
             {isGameStarted ? (
               <>
-                <Pong roomData={roomData} setting={setting}></Pong>
+                <Pong
+                  roomData={roomData}
+                  setting={setting}
+                  isUserHost={isUserHost}
+                ></Pong>
               </>
             ) : (
               <div className="waiting-area">

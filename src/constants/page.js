@@ -2,7 +2,6 @@ export const MotionSettingPage = {
   INITIAL: 'initial',
   TURN_LEFT: 'turnLeft',
   TURN_RIGHT: 'turnRight',
-  HEAD_FORWARD: 'headForward',
   FINISH: 'finish',
 };
 
@@ -16,11 +15,11 @@ export const ControllerPage = {
   MOTION_SETTING: 'motionSetting',
   TURN_LEFT: 'turnLeft',
   TURN_RIGHT: 'turnRight',
-  HEAD_FORWARD: 'headForward',
   SETTING_FINISH: 'settingFinish',
   DEFAULT: 'default',
   CONNECTION_SUCCESS: 'connectionSuccess',
   GAME: 'game',
+  EXPIRED: 'expired',
 };
 
 Object.freeze(MotionSettingPage);

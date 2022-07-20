@@ -172,14 +172,16 @@ export default function Settings() {
               {setting.isPlayingSFX ? 'O' : 'X'}
             </div>
           </div>
-          <div className="toggle-button-area">
-            <button type="button" name="motion" onClick={handleToggleButton}>
-              컨트롤러 움직임으로 메뉴 이동하기
-            </button>
-            <div className="status-box" data-testid="motion">
-              {setting.isChangedPageByMotion ? 'O' : 'X'}
+          {setting.isCompletedMotionSettings && (
+            <div className="toggle-button-area">
+              <button type="button" name="motion" onClick={handleToggleButton}>
+                컨트롤러 움직임으로 메뉴 이동하기
+              </button>
+              <div className="status-box" data-testid="motion">
+                {setting.isChangedPageByMotion ? 'O' : 'X'}
+              </div>
             </div>
-          </div>
+          )}
           <button type="button" onClick={handleSetConnection}>
             컨트롤러 연결 설정
           </button>

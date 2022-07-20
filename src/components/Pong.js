@@ -15,20 +15,25 @@ import {
   sendGuestPaddleVibration,
   sendGuestWin,
   sendGuestWinVibration,
+  sendHostIsInFocus,
+  sendHostIsNotInFocus,
   sendHostLoseVibration,
   sendHostPaddleVibration,
   sendHostWin,
   sendHostWinVibration,
   sendResizeEvent,
+  sendSyncGame,
   socket,
 } from '../utils/socketAPI';
 
-const Pong = ({ roomData, setting }) => {
+const Pong = ({ roomData, setting, isUserHost }) => {
   const wrapRef = useRef(null);
   const canvasRef = useRef(null);
   const width = Math.floor(roomData.width / 10) * 10;
   const height = Math.floor(roomData.height / 10) * 10;
   const isFrameMoving = useRef(true);
+  const isScoreChanged = useRef(false);
+  const isBallMoving = useRef(true);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -100,6 +105,20 @@ const Pong = ({ roomData, setting }) => {
     const paddleWidth = canvas.width * 0.015;
     let hostPaddleVerticalStartpoint = 0;
     let guestPaddleVerticalStartpoint = 0;
+
+    const resumeGame = (winner) => {
+      sendSyncGame({
+        gameId: roomData.gameId,
+        isUserHost,
+        gameData: {
+          hostScore,
+          guestScore,
+          winner,
+          random:
+            (Math.random() + 1) * ((hostScore + guestScore) % 2 === 0 ? 1 : -1),
+        },
+      });
+    };
 
     const render = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
@@ -179,30 +198,28 @@ const Pong = ({ roomData, setting }) => {
         setting.isPlayingSFX && playWallHitSound();
       }
 
-      if (ballLeft <= 0) {
+      if (ballLeft <= 0 && !isScoreChanged.current) {
         plusOneGuestScore();
-
-        ballDeltaX = getDeltaValue(roomData.isNormalMode, canvas.width);
-        ballDeltaY = getDeltaValue(roomData.isNormalMode, canvas.width);
-        ballCenterX = canvas.width / 2;
-        ballCenterY = canvas.height / 2;
+        isScoreChanged.current = true;
+        isBallMoving.current = false;
 
         setting.isVibrationMode && sendGuestWinVibration(roomData.gameId);
         setting.isVibrationMode && sendHostLoseVibration(roomData.gameId);
         setting.isPlayingSFX && playExtinctionSound();
+
+        resumeGame('guest');
       }
 
-      if (ballRight >= canvas.width) {
+      if (ballRight >= canvas.width && !isScoreChanged.current) {
         plusOneHostScore();
-
-        ballDeltaX = getDeltaValue(roomData.isNormalMode, canvas.width);
-        ballDeltaY = getDeltaValue(roomData.isNormalMode, canvas.width);
-        ballCenterX = canvas.width / 2;
-        ballCenterY = canvas.height / 2;
+        isScoreChanged.current = true;
+        isBallMoving.current = false;
 
         setting.isVibrationMode && sendGuestLoseVibration(roomData.gameId);
         setting.isVibrationMode && sendHostWinVibration(roomData.gameId);
         setting.isPlayingSFX && playExtinctionSound();
+
+        resumeGame('host');
       }
 
       if (
@@ -227,8 +244,10 @@ const Pong = ({ roomData, setting }) => {
         setting.isPlayingSFX && playPaddleHitSound();
       }
 
-      ballCenterX += ballDeltaX;
-      ballCenterY += ballDeltaY;
+      if (isBallMoving.current) {
+        ballCenterX += ballDeltaX;
+        ballCenterY += ballDeltaY;
+      }
 
       if (isFrameMoving.current) {
         requestId = requestAnimationFrame(render);
@@ -290,13 +309,56 @@ const Pong = ({ roomData, setting }) => {
       window.removeEventListener('resize', handleResize);
     };
 
+    const handleFocus = () => {
+      if (isUserHost) {
+        sendHostIsInFocus(roomData.gameId);
+      }
+    };
+
+    const handleBlur = () => {
+      if (isUserHost) {
+        sendHostIsNotInFocus(roomData.gameId);
+      }
+    };
+
+    const handleSyncGameData = (data) => {
+      if (data.winner === 'host') {
+        ballDeltaX = getDeltaValue(roomData.isNormalMode, canvas.width);
+        ballDeltaY =
+          getDeltaValue(roomData.isNormalMode, canvas.height) * data.random;
+      } else if (data.winner === 'guest') {
+        ballDeltaX = getDeltaValue(roomData.isNormalMode, canvas.width) * -1;
+        ballDeltaY =
+          getDeltaValue(roomData.isNormalMode, canvas.height) * data.random;
+      }
+
+      ballCenterX = canvas.width / 2;
+      ballCenterY = canvas.height / 2;
+
+      hostScore = data.hostScore;
+      guestScore = data.guestScore;
+
+      isScoreChanged.current = false;
+      isBallMoving.current = true;
+    };
+
     enterControllerGamePage();
+
     socket.on(SocketEvent.RECEIVE_BETA, handlePaddleMove);
+    socket.on(SocketEvent.RECEIVE_SYNC_GAME, handleSyncGameData);
+
     window.addEventListener('resize', handleResize);
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
 
     return () => {
       socket.off(SocketEvent.RECEIVE_BETA, handlePaddleMove);
+      socket.off(SocketEvent.RECEIVE_SYNC_GAME, handleSyncGameData);
+
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
+
       cancelAnimationFrame(requestId);
     };
   }, [
@@ -308,6 +370,7 @@ const Pong = ({ roomData, setting }) => {
     height,
     setting.isVibrationMode,
     setting.isPlayingSFX,
+    isUserHost,
   ]);
 
   return (
@@ -332,6 +395,7 @@ const CanvasWrap = styled.div`
 Pong.propTypes = {
   roomData: PropTypes.object.isRequired,
   setting: PropTypes.object.isRequired,
+  isUserHost: PropTypes.bool.isRequired,
 };
 
 export default Pong;

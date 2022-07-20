@@ -110,45 +110,67 @@ export default function Lobby() {
     <>
       <LobbyWrap onClick={handleButtonSound}>
         <div className="title-area">| GAME LIST |</div>
-        <div className="room-list-area">
-          {gameList.length ? (
-            gameList.map((game) => (
-              <EntryButton
-                key={game.gameId}
-                onClick={() => {
-                  handleEnterGame(game.gameId);
-                }}
-                disabled={game.isFull || game.isStarted}
-              >
-                <div className="order-area">{game.registrationOrder}번 방</div>
-                <div className="mode-area">
-                  난이도: {game.isNormalMode ? '보통' : '어려움'}
-                </div>
-                <div className="target-score-area">
-                  목표 점수: {game.isNormalTargetScore ? '11점' : '21점'}
-                </div>
-                <div className="entry-ability-area">
-                  {game.isFull || game.isStarted ? '입장 불가' : '입장 가능'}
-                </div>
-              </EntryButton>
-            ))
-          ) : (
-            <div>생성된 방이 없습니다</div>
-          )}
-        </div>
-        <div className="button-area">
-          <button type="button" onClick={handleShowModal}>
-            {setting.isChangedPageByMotion && <span>&#129144; &#129146;</span>}{' '}
-            게임 생성하기
-          </button>
-          <Link to="/">
-            {setting.isChangedPageByMotion && <span>&#129145; &#129144;</span>}{' '}
-            뒤로가기
-          </Link>
-        </div>
-        {setting.isChangedPageByMotion && (
+        {setting.isCompletedMotionSettings ? (
           <>
-            <div className="motion-value-area">{motionValueList}</div>
+            <div className="room-list-area">
+              {gameList.length ? (
+                gameList.map((game) => (
+                  <EntryButton
+                    key={game.gameId}
+                    onClick={() => {
+                      handleEnterGame(game.gameId);
+                    }}
+                    disabled={game.isFull || game.isStarted}
+                  >
+                    <div className="order-area">
+                      {game.registrationOrder}번 방
+                    </div>
+                    <div className="mode-area">
+                      난이도: {game.isNormalMode ? '보통' : '어려움'}
+                    </div>
+                    <div className="target-score-area">
+                      목표 점수: {game.isNormalTargetScore ? '11점' : '21점'}
+                    </div>
+                    <div className="entry-ability-area">
+                      {game.isFull || game.isStarted
+                        ? '입장 불가'
+                        : '입장 가능'}
+                    </div>
+                  </EntryButton>
+                ))
+              ) : (
+                <div>생성된 방이 없습니다</div>
+              )}
+            </div>
+            <div className="button-area">
+              <button type="button" onClick={handleShowModal}>
+                {setting.isChangedPageByMotion && (
+                  <span>&#129144; &#129146;</span>
+                )}{' '}
+                게임 생성하기
+              </button>
+              <Link to="/">
+                {setting.isChangedPageByMotion && (
+                  <span>&#129145; &#129144;</span>
+                )}{' '}
+                뒤로가기
+              </Link>
+            </div>
+            {setting.isChangedPageByMotion && (
+              <>
+                <div className="motion-value-area">{motionValueList}</div>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="message-area">
+              컨트롤러를 연결하고 움직임 설정까지 마쳐야 게임에 진입할 수
+              있습니다
+            </div>
+            <div className="button-area">
+              <Link to="/">뒤로가기</Link>
+            </div>
           </>
         )}
       </LobbyWrap>
@@ -264,6 +286,13 @@ const LobbyWrap = styled.div`
     justify-content: center;
     flex-basis: 5%;
     font-size: 30px;
+  }
+
+  .message-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-basis: 5%;
   }
 
   a {

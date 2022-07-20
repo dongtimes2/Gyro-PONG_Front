@@ -12,8 +12,8 @@ export const registerControllerId = (userId) => {
   socket.emit(SocketEvent.REGISTER_CONTROLLER_ID, userId);
 };
 
-export const disconnectController = () => {
-  socket.emit(SocketEvent.DISCONNECT_CONTROLLER);
+export const disconnectController = (data) => {
+  socket.emit(SocketEvent.DISCONNECT_CONTROLLER, data);
 };
 
 export const controllerCompatibilitySuccess = () => {
@@ -146,4 +146,16 @@ export const sendMotionChangingModeState = (data) => {
 
 export const sendStopDetectMotion = () => {
   socket.emit(SocketEvent.SEND_STOP_DETECT_MOTION);
+};
+
+export const sendSyncGame = (data) => {
+  socket.emit(SocketEvent.SEND_SYNC_GAME, data);
+};
+
+export const sendHostIsInFocus = (gameId) => {
+  socket.emit(SocketEvent.SEND_HOST_IS_IN_FOCUS, gameId);
+};
+
+export const sendHostIsNotInFocus = (gameId) => {
+  socket.emit(SocketEvent.SEND_HOST_IS_NOT_IN_FOCUS, gameId);
 };

@@ -5,6 +5,9 @@ import styled from 'styled-components';
 
 import { MotionSettingPage } from '../constants/page';
 import SocketEvent from '../constants/socket';
+import horizonImage from '../images/horizon.png';
+import leftImage from '../images/left.png';
+import rightImage from '../images/right.png';
 import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
 import { enterControllerMotionSerringPage, socket } from '../utils/socketAPI';
@@ -50,6 +53,9 @@ const MotionSetting = () => {
             <div>기기의 상단이 왼쪽으로 가게끔 가로로 잡아주세요.</div>
             <div>그 다음 측정 시작하기 버튼을 눌러주세요.</div>
           </div>
+          <div className="image-area">
+            <img src={horizonImage}></img>
+          </div>
 
           {setting.isCompletedMotionSettings && (
             <div className="sub-area">
@@ -63,17 +69,27 @@ const MotionSetting = () => {
       )}
 
       {currentPage === MotionSettingPage.TURN_LEFT && (
-        <div className="header-area">
-          <div>기기를 편한 각도까지 왼쪽으로 기울여주세요.</div>
-          <div>그 다음 확인 버튼을 눌러주세요.</div>
-        </div>
+        <>
+          <div className="header-area">
+            <div>기기를 편한 각도까지 왼쪽으로 기울여주세요.</div>
+            <div>그 다음 확인 버튼을 눌러주세요.</div>
+          </div>
+          <div className="image-area">
+            <img src={leftImage}></img>
+          </div>
+        </>
       )}
 
       {currentPage === MotionSettingPage.TURN_RIGHT && (
-        <div className="header-area">
-          <div>기기를 편한 각도까지 오른쪽으로 기울여주세요.</div>
-          <div>그 다음 확인 버튼을 눌러주세요.</div>
-        </div>
+        <>
+          <div className="header-area">
+            <div>기기를 편한 각도까지 오른쪽으로 기울여주세요.</div>
+            <div>그 다음 확인 버튼을 눌러주세요.</div>
+          </div>
+          <div className="image-area">
+            <img src={rightImage}></img>
+          </div>
+        </>
       )}
 
       {currentPage === MotionSettingPage.FINISH && (
@@ -108,9 +124,25 @@ const MotionSettingWrap = styled.div`
     flex-basis: 30%;
   }
 
+  .image-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-basis: 50%;
+    width: 100%;
+    height: 100%;
+  }
+
+  .image-area img {
+    width: 25%;
+    object-fit: contain;
+  }
+
   .sub-area {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    flex-basis: 20%;
     align-items: center;
     font-size: 0.8em;
   }

@@ -16,7 +16,10 @@ export default function Main() {
   const navigate = useNavigate();
 
   const handleButtonSound = (event) => {
-    if (event.target.nodeName === 'A' && setting.isPlayingSFX) {
+    if (
+      (event.target.nodeName === 'BUTTON' || event.target.nodeName === 'A') &&
+      setting.isPlayingSFX
+    ) {
       playClickSound();
     }
   };
@@ -56,34 +59,57 @@ export default function Main() {
       setTimeout(() => {
         navigate('/settings');
       }, 500);
-    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡻') {
+    } else if (
+      motionValueList[0] === '🡹' &&
+      motionValueList[1] === '🡻' &&
+      setting.isCompletedMotionSettings
+    ) {
       setTimeout(() => {
         navigate('/lobby');
       }, 500);
-    } else if (motionValueList[0] === '🡻' && motionValueList[1] === '🡺') {
+    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡺') {
       setTimeout(() => {
         navigate('/guides');
       }, 500);
     } else if (motionValueList.length >= 2) {
       setMotionValueList([]);
     }
-  }, [motionValueList, navigate]);
+  }, [motionValueList, navigate, setting.isCompletedMotionSettings]);
+
+  const handleGoToLobby = () => {
+    navigate('/lobby');
+  };
 
   return (
     <MainWrap onClick={handleButtonSound}>
       <div className="title-area">| Gyro PONG |</div>
-
+      <div className="message-area">
+        {!setting.isCompletedMotionSettings && (
+          <>
+            컨트롤러를 연결하고 움직임 설정까지 마쳐야 게임에 진입할 수 있습니다
+          </>
+        )}
+      </div>
       <div className="button-area">
         <Link to="/settings">
-          {setting.isChangedPageByMotion && <span>&#129145; &#129144;</span>}{' '}
+          {setting.isChangedPageByMotion && (
+            <span className="arrow-area">&#129145; &#129144;</span>
+          )}{' '}
           설정
         </Link>
-        <Link to="/lobby">
-          {setting.isChangedPageByMotion && <span>&#129145; &#129147;</span>}{' '}
+        <button
+          disabled={!setting.isCompletedMotionSettings}
+          onClick={handleGoToLobby}
+        >
+          {setting.isChangedPageByMotion && (
+            <span className="arrow-area">&#129145; &#129147;</span>
+          )}{' '}
           게임 시작
-        </Link>
+        </button>
         <Link to="/guides">
-          {setting.isChangedPageByMotion && <span>&#129147; &#129146;</span>}{' '}
+          {setting.isChangedPageByMotion && (
+            <span className="arrow-area">&#129145; &#129146;</span>
+          )}{' '}
           도움말
         </Link>
       </div>
@@ -107,11 +133,17 @@ const MainWrap = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-basis: 70%;
+    flex-basis: 67%;
     font-size: 200px;
     white-space: nowrap;
     animation: typing 0.9s steps(5);
     overflow: hidden;
+  }
+
+  .message-area {
+    display: flex;
+    flex-basis: 3%;
+    align-items: center;
   }
 
   .button-area {
@@ -129,9 +161,18 @@ const MainWrap = styled.div`
     font-size: 30px;
   }
 
-  a {
+  .button-area a {
     padding: 20px 50px;
     font-size: 50px;
+  }
+
+  .button-area button {
+    padding: 20px 50px;
+    font-size: 50px;
+  }
+
+  .arrow-area {
+    font-size: 35px;
   }
 
   @keyframes typing {
