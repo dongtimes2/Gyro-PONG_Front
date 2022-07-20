@@ -184,10 +184,6 @@ export default function Controller() {
       setControllerPage(ControllerPage.TURN_RIGHT);
     });
 
-    socket.on(SocketEvent.LOAD_CONTROLLER_FORWARD_SETTING_PAGE, () => {
-      setControllerPage(ControllerPage.HEAD_FORWARD);
-    });
-
     socket.on(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE, () => {
       setControllerPage(ControllerPage.SETTING_FINISH);
       sensorDeactivate();
@@ -235,12 +231,16 @@ export default function Controller() {
       },
     );
 
+    socket.on(SocketEvent.RECEIVE_EXPIRE_CONTROLLER, () => {
+      setControllerPage(ControllerPage.EXPIRED);
+      sensorDeactivate();
+    });
+
     return () => {
       socket.off(SocketEvent.LOAD_CONTROLLER_SENSOR_ACTIVATE_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_MOTION_SETTING_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_LEFT_SETTING_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_RIGHT_SETTING_PAGE);
-      socket.off(SocketEvent.LOAD_CONTROLLER_FORWARD_SETTING_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_DEFAULT_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_CONNECTION_SUCCESS_PAGE);
@@ -250,6 +250,7 @@ export default function Controller() {
       socket.off(SocketEvent.RECEIVE_WIN_VIBRATION);
       socket.off(SocketEvent.RECEIVE_LOSE_VIBRATION);
       socket.off(SocketEvent.RECEIVE_MOTION_CHANGING_MODE_STATE);
+      socket.off(SocketEvent.RECEIVE_EXPIRE_CONTROLLER);
     };
   }, [params.userId, sensorActivate, sensorDeactivate]);
 
@@ -268,8 +269,11 @@ export default function Controller() {
 
   const handleExitActivation = () => {
     sendExit();
-    disconnectController();
-    setControllerPage(ControllerPage.DEFAULT);
+    disconnectController({
+      sender: 'controller',
+      controllerId: null,
+    });
+    setControllerPage(ControllerPage.EXPIRED);
   };
 
   const handleExitSetting = () => {
@@ -380,6 +384,11 @@ export default function Controller() {
           <button type="button" onClick={handleExitGame}>
             게임 그만두기
           </button>
+        </>
+      )}
+      {controllerPage === ControllerPage.EXPIRED && (
+        <>
+          <div className="header">만료된 컨트롤러</div>
         </>
       )}
     </ControllerWrap>

@@ -12,8 +12,8 @@ export const registerControllerId = (userId) => {
   socket.emit(SocketEvent.REGISTER_CONTROLLER_ID, userId);
 };
 
-export const disconnectController = () => {
-  socket.emit(SocketEvent.DISCONNECT_CONTROLLER);
+export const disconnectController = (data) => {
+  socket.emit(SocketEvent.DISCONNECT_CONTROLLER, data);
 };
 
 export const controllerCompatibilitySuccess = () => {

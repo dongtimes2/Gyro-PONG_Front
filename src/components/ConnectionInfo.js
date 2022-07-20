@@ -3,8 +3,10 @@ import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import settingState from '../recoil/settingState';
+import userState from '../recoil/userState';
 import controllerUrlGenerator from '../utils/controllerUrlGenerator';
 import { playClickSound } from '../utils/playSound';
+import { disconnectController } from '../utils/socketAPI';
 import urlCopier from '../utils/urlCopier';
 
 import Qrcode from './Qrcode';
@@ -15,6 +17,7 @@ const ConnectionInfo = ({
   isCheckingCompatibility,
   isCompatible,
 }) => {
+  const user = useRecoilValue(userState);
   const setting = useRecoilValue(settingState);
   const controllerUrl = controllerUrlGenerator(userId);
 
@@ -26,6 +29,13 @@ const ConnectionInfo = ({
     if (event.target.nodeName === 'BUTTON' && setting.isPlayingSFX) {
       playClickSound();
     }
+  };
+
+  const handleDisconnect = () => {
+    disconnectController({
+      sender: 'settingPage',
+      controllerId: user.controllerId,
+    });
   };
 
   return (
@@ -53,15 +63,23 @@ const ConnectionInfo = ({
                 <div className="icon-area">
                   <div>ok</div>
                 </div>
+                <div className="button-area">
+                  <button onClick={handleDisconnect}>기기 연결 끊기</button>
+                </div>
               </>
             ) : (
               <>
                 <div className="header">
                   <div>기기에 자이로센서를 찾을 수 없습니다.</div>
-                  <div>다른 기기를 이용해주세요.</div>
+                  <div>
+                    연결을 끊고 다시 시도하거나, 다른 기기를 이용해주세요.
+                  </div>
                 </div>
                 <div className="icon-area">
                   <div>error</div>
+                </div>
+                <div className="button-area">
+                  <button onClick={handleDisconnect}>기기 연결 끊기</button>
                 </div>
               </>
             ))}
@@ -119,7 +137,7 @@ const ConnectionInfoWrap = styled.div`
 
   .icon-area {
     display: flex;
-    flex-basis: 85%;
+    flex-basis: 75%;
     font-size: 150px;
     align-items: center;
   }
