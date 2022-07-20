@@ -147,3 +147,15 @@ export const sendMotionChangingModeState = (data) => {
 export const sendStopDetectMotion = () => {
   socket.emit(SocketEvent.SEND_STOP_DETECT_MOTION);
 };
+
+export const sendSyncGame = (data) => {
+  socket.emit(SocketEvent.SEND_SYNC_GAME, data);
+};
+
+export const sendHostIsInFocus = (gameId) => {
+  socket.emit(SocketEvent.SEND_HOST_IS_IN_FOCUS, gameId);
+};
+
+export const sendHostIsNotInFocus = (gameId) => {
+  socket.emit(SocketEvent.SEND_HOST_IS_NOT_IN_FOCUS, gameId);
+};

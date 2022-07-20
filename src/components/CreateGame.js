@@ -37,6 +37,7 @@ const CreateGame = () => {
       isNormalTargetScore,
       isStarted: false,
       isFull: false,
+      isHostInFocus: true,
       userList: [],
       controllerList: [],
       width: Number.MAX_SAFE_INTEGER,

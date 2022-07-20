@@ -175,7 +175,11 @@ export default function Game() {
           <>
             {isGameStarted ? (
               <>
-                <Pong roomData={roomData} setting={setting}></Pong>
+                <Pong
+                  roomData={roomData}
+                  setting={setting}
+                  isUserHost={isUserHost}
+                ></Pong>
               </>
             ) : (
               <div className="waiting-area">
