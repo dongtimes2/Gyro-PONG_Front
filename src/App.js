@@ -51,7 +51,6 @@ function App() {
           isCompletedMotionSettings: false,
           left: 0,
           right: 0,
-          forward: 0,
         };
       });
     });
