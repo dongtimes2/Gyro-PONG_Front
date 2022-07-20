@@ -124,12 +124,14 @@ export default function Controller() {
       if (!result) {
         compatibilityChecked();
 
-        if (!(event.alpha || event.beta)) {
-          controllerCompatibilityFailure();
-          return;
-        } else {
-          controllerCompatibilitySuccess();
-        }
+        setTimeout(() => {
+          if (!(event.alpha || event.beta)) {
+            controllerCompatibilityFailure();
+            return;
+          } else {
+            controllerCompatibilitySuccess();
+          }
+        }, 1000);
       }
     };
 
@@ -184,11 +186,6 @@ export default function Controller() {
       setControllerPage(ControllerPage.TURN_RIGHT);
     });
 
-    socket.on(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE, () => {
-      setControllerPage(ControllerPage.SETTING_FINISH);
-      sensorDeactivate();
-    });
-
     socket.on(SocketEvent.LOAD_CONTROLLER_DEFAULT_PAGE, () => {
       setControllerPage(ControllerPage.DEFAULT);
     });
@@ -241,7 +238,6 @@ export default function Controller() {
       socket.off(SocketEvent.LOAD_CONTROLLER_MOTION_SETTING_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_LEFT_SETTING_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_RIGHT_SETTING_PAGE);
-      socket.off(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_DEFAULT_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_CONNECTION_SUCCESS_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_GAME_PAGE);
@@ -253,6 +249,17 @@ export default function Controller() {
       socket.off(SocketEvent.RECEIVE_EXPIRE_CONTROLLER);
     };
   }, [params.userId, sensorActivate, sensorDeactivate]);
+
+  useEffect(() => {
+    socket.on(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE, () => {
+      setControllerPage(ControllerPage.SETTING_FINISH);
+      !isMotionChangingMode && sensorDeactivate();
+    });
+
+    return () => {
+      socket.off(SocketEvent.LOAD_CONTROLLER_SETTING_FINISH_PAGE);
+    };
+  }, [isMotionChangingMode, sensorDeactivate]);
 
   const handleStartActivation = () => {
     sensorActivate();
