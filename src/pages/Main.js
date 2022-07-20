@@ -16,7 +16,10 @@ export default function Main() {
   const navigate = useNavigate();
 
   const handleButtonSound = (event) => {
-    if (event.target.nodeName === 'A' && setting.isPlayingSFX) {
+    if (
+      (event.target.nodeName === 'BUTTON' || event.target.nodeName === 'A') &&
+      setting.isPlayingSFX
+    ) {
       playClickSound();
     }
   };
