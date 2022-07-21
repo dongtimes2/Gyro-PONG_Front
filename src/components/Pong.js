@@ -34,6 +34,7 @@ const Pong = ({ roomData, setting, isUserHost }) => {
   const isFrameMoving = useRef(true);
   const isScoreChanged = useRef(false);
   const isBallMoving = useRef(true);
+  const IsHostInFocus = useRef(true);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -311,35 +312,42 @@ const Pong = ({ roomData, setting, isUserHost }) => {
 
     const handleFocus = () => {
       if (isUserHost) {
-        sendHostIsInFocus(roomData.gameId);
+        IsHostInFocus.current = true;
       }
     };
 
     const handleBlur = () => {
       if (isUserHost) {
+        IsHostInFocus.current = false;
         sendHostIsNotInFocus(roomData.gameId);
       }
     };
 
     const handleSyncGameData = (data) => {
-      if (data.winner === 'host') {
+      if (data.gameData.winner === 'host') {
         ballDeltaX = getDeltaValue(roomData.isNormalMode, canvas.width);
         ballDeltaY =
-          getDeltaValue(roomData.isNormalMode, canvas.height) * data.random;
-      } else if (data.winner === 'guest') {
+          getDeltaValue(roomData.isNormalMode, canvas.height) *
+          data.gameData.random;
+      } else if (data.gameData.winner === 'guest') {
         ballDeltaX = getDeltaValue(roomData.isNormalMode, canvas.width) * -1;
         ballDeltaY =
-          getDeltaValue(roomData.isNormalMode, canvas.height) * data.random;
+          getDeltaValue(roomData.isNormalMode, canvas.height) *
+          data.gameData.random;
       }
 
       ballCenterX = canvas.width / 2;
       ballCenterY = canvas.height / 2;
 
-      hostScore = data.hostScore;
-      guestScore = data.guestScore;
+      hostScore = data.gameData.hostScore;
+      guestScore = data.gameData.guestScore;
 
       isScoreChanged.current = false;
       isBallMoving.current = true;
+
+      if (isUserHost && IsHostInFocus.current && !data.isHostInFocus) {
+        sendHostIsInFocus(roomData.gameId);
+      }
     };
 
     enterControllerGamePage();
