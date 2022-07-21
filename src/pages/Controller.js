@@ -233,6 +233,10 @@ export default function Controller() {
       sensorDeactivate();
     });
 
+    socket.on(SocketEvent.RECEIVE_TOGGLE_MOTION_BUTTON, () => {
+      setIsDetectingMotion(false);
+    });
+
     return () => {
       socket.off(SocketEvent.LOAD_CONTROLLER_SENSOR_ACTIVATE_PAGE);
       socket.off(SocketEvent.LOAD_CONTROLLER_MOTION_SETTING_PAGE);
@@ -247,6 +251,7 @@ export default function Controller() {
       socket.off(SocketEvent.RECEIVE_LOSE_VIBRATION);
       socket.off(SocketEvent.RECEIVE_MOTION_CHANGING_MODE_STATE);
       socket.off(SocketEvent.RECEIVE_EXPIRE_CONTROLLER);
+      socket.off(SocketEvent.RECEIVE_TOGGLE_MOTION_BUTTON);
     };
   }, [params.userId, sensorActivate, sensorDeactivate]);
 
@@ -318,11 +323,13 @@ export default function Controller() {
           {isMotionChangingMode && (
             <>
               {isDetectingMotion ? (
-                <button onClick={handleStopDetectMotion}>
+                <button type="button" onClick={handleStopDetectMotion}>
                   모션감지 멈추기
                 </button>
               ) : (
-                <button onClick={handleDetectMotion}>모션감지 활성화</button>
+                <button type="button" onClick={handleDetectMotion}>
+                  모션감지 시작
+                </button>
               )}
             </>
           )}

@@ -24,8 +24,8 @@ export const controllerCompatibilityFailure = () => {
   socket.emit(SocketEvent.CONTROLLER_COMPATIBILITY_FAILURE);
 };
 
-export const enterControllerMotionSerringPage = (deviceId) => {
-  socket.emit(SocketEvent.ENTER_CONTROLLER_MOTION_SETTING_PAGE, deviceId);
+export const enterControllerMotionSerringPage = (controllerId) => {
+  socket.emit(SocketEvent.ENTER_CONTROLLER_MOTION_SETTING_PAGE, controllerId);
 };
 
 export const startMotionSetting = () => {
@@ -158,4 +158,8 @@ export const sendHostIsInFocus = (gameId) => {
 
 export const sendHostIsNotInFocus = (gameId) => {
   socket.emit(SocketEvent.SEND_HOST_IS_NOT_IN_FOCUS, gameId);
+};
+
+export const sendToggleMotionButton = (controllerId) => {
+  socket.emit(SocketEvent.SEND_TOGGLE_MOTION_BUTTON, controllerId);
 };

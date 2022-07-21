@@ -13,7 +13,11 @@ import SocketEvent from '../constants/socket';
 import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
 import { playClickSound, musicController } from '../utils/playSound';
-import { sendMotionChangingModeState, socket } from '../utils/socketAPI';
+import {
+  sendMotionChangingModeState,
+  sendToggleMotionButton,
+  socket,
+} from '../utils/socketAPI';
 
 export default function Settings() {
   const [setting, setSetting] = useRecoilState(settingState);
@@ -136,10 +140,12 @@ export default function Settings() {
       setTimeout(() => {
         navigate('/');
       }, 500);
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList.length >= 2) {
       setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
     }
-  }, [motionValueList, navigate]);
+  }, [motionValueList, navigate, user.controllerId]);
 
   musicController(setting.isPlayingMusic);
 

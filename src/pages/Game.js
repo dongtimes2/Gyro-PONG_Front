@@ -21,6 +21,7 @@ import {
   sendJoinGame,
   sendRoomIsFull,
   sendRoomIsNotFull,
+  sendToggleMotionButton,
   socket,
   userExitGame,
 } from '../utils/socketAPI';
@@ -180,10 +181,13 @@ export default function Game() {
         }, 500);
       }
       setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
       naviagte('/lobby');
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList.length >= 2) {
       setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
     }
   }, [
     motionValueList,
@@ -192,6 +196,7 @@ export default function Game() {
     params.gameId,
     naviagte,
     isAbleToStart,
+    user.controllerId,
   ]);
 
   const handleGuestExit = () => {

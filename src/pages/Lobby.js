@@ -9,14 +9,20 @@ import ModalPortal from '../components/ModalPortal';
 import Modal from '../components/Mordal';
 import SocketEvent from '../constants/socket';
 import settingState from '../recoil/settingState';
+import userState from '../recoil/userState';
 import { playClickSound } from '../utils/playSound';
-import { requestGameList, socket } from '../utils/socketAPI';
+import {
+  requestGameList,
+  sendToggleMotionButton,
+  socket,
+} from '../utils/socketAPI';
 
 export default function Lobby() {
   const [isShowingModal, setIsShowingModal] = useState(false);
   const [gameList, setGameLIst] = useState([]);
   const [motionValueList, setMotionValueList] = useState([]);
   const setting = useRecoilValue(settingState);
+  const user = useRecoilValue(userState);
 
   const navigate = useNavigate();
 
@@ -86,17 +92,21 @@ export default function Lobby() {
         handleShowModal();
         setMotionValueList([]);
       }, 500);
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
       setTimeout(() => {
         navigate('/');
       }, 500);
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡻') {
       handleQuickJoin();
       setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList.length >= 2) {
       setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
     }
-  }, [motionValueList, navigate, handleQuickJoin]);
+  }, [motionValueList, navigate, handleQuickJoin, user.controllerId]);
 
   const handleShowModal = () => {
     setIsShowingModal(true);

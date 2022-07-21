@@ -10,7 +10,7 @@ import SocketEvent from '../constants/socket';
 import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
 import { playClickSound } from '../utils/playSound';
-import { socket, createGame } from '../utils/socketAPI';
+import { socket, createGame, sendToggleMotionButton } from '../utils/socketAPI';
 
 const CreateGame = ({ onclose }) => {
   const [isNormalMode, setIsNormalMode] = useState(true);
@@ -90,21 +90,26 @@ const CreateGame = ({ onclose }) => {
     if (motionValueList[0] === '🡺' && motionValueList[1] === '🡹') {
       handleChangeLevel();
       setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList[0] === '🡺' && motionValueList[1] === '🡻') {
       handleChangeTagetScore();
       setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList[0] === '🡸' && motionValueList[1] === '🡺') {
       setTimeout(() => {
         handleCreateGame();
       }, 100);
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
       setTimeout(() => {
         onclose(false);
       }, 100);
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList.length >= 2) {
       setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
     }
-  }, [motionValueList, navigate, handleCreateGame, onclose]);
+  }, [motionValueList, navigate, handleCreateGame, onclose, user.controllerId]);
 
   return (
     <CreateGameWrap onClick={handleButtonSound}>
