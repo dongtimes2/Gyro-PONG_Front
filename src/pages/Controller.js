@@ -124,14 +124,12 @@ export default function Controller() {
       if (!result) {
         compatibilityChecked();
 
-        setTimeout(() => {
-          if (!(event.alpha || event.beta)) {
-            controllerCompatibilityFailure();
-            return;
-          } else {
-            controllerCompatibilitySuccess();
-          }
-        }, 1000);
+        if (event.alpha === null || event.beta === null) {
+          controllerCompatibilityFailure();
+          return;
+        } else {
+          controllerCompatibilitySuccess();
+        }
       }
     };
 
