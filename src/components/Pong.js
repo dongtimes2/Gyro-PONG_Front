@@ -101,6 +101,7 @@ const Pong = ({ roomData, setting, isUserHost }) => {
     let ballDeltaX = getDeltaValue(roomData.isNormalMode, canvas.width);
     let ballDeltaY = getDeltaValue(roomData.isNormalMode, canvas.height);
     let changeAcceleration = true;
+    let collisonLocation = '';
 
     const paddleLength = getPaddleLength(roomData.isNormalMode, canvas.height);
     const paddleWidth = canvas.width * 0.015;
@@ -123,7 +124,6 @@ const Pong = ({ roomData, setting, isUserHost }) => {
 
     const render = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
-
       context.beginPath();
       context.moveTo(canvas.width / 2, 0);
       context.lineTo(canvas.width / 2, canvas.height);
@@ -179,6 +179,7 @@ const Pong = ({ roomData, setting, isUserHost }) => {
 
       if (ballTop <= 0) {
         ballDeltaY *= -1;
+        collisonLocation = 'top';
 
         if (changeAcceleration) {
           ballDeltaX *= 1.05;
@@ -190,6 +191,7 @@ const Pong = ({ roomData, setting, isUserHost }) => {
 
       if (ballBottom >= canvas.height) {
         ballDeltaY *= -1;
+        collisonLocation = 'bottom';
 
         if (changeAcceleration) {
           ballDeltaX *= 1.05;
@@ -203,6 +205,7 @@ const Pong = ({ roomData, setting, isUserHost }) => {
         plusOneGuestScore();
         isScoreChanged.current = true;
         isBallMoving.current = false;
+        collisonLocation = '';
 
         setting.isVibrationMode && sendGuestWinVibration(roomData.gameId);
         setting.isVibrationMode && sendHostLoseVibration(roomData.gameId);
@@ -215,6 +218,7 @@ const Pong = ({ roomData, setting, isUserHost }) => {
         plusOneHostScore();
         isScoreChanged.current = true;
         isBallMoving.current = false;
+        collisonLocation = '';
 
         setting.isVibrationMode && sendGuestLoseVibration(roomData.gameId);
         setting.isVibrationMode && sendHostWinVibration(roomData.gameId);
@@ -227,9 +231,12 @@ const Pong = ({ roomData, setting, isUserHost }) => {
         canvas.width / 20 < ballRight &&
         canvas.width / 20 + paddleWidth >= ballLeft &&
         hostPaddleVerticalStartpoint < ballBottom &&
-        hostPaddleVerticalStartpoint + paddleLength > ballTop
+        hostPaddleVerticalStartpoint + paddleLength > ballTop &&
+        collisonLocation !== 'host'
       ) {
         ballDeltaX *= -1;
+        collisonLocation = 'host';
+
         setting.isVibrationMode && sendHostPaddleVibration(roomData.gameId);
         setting.isPlayingSFX && playPaddleHitSound();
       }
@@ -238,9 +245,12 @@ const Pong = ({ roomData, setting, isUserHost }) => {
         canvas.width - canvas.width / 20 > ballLeft &&
         canvas.width - canvas.width / 20 - paddleWidth <= ballRight &&
         guestPaddleVerticalStartpoint < ballBottom &&
-        guestPaddleVerticalStartpoint + paddleLength > ballTop
+        guestPaddleVerticalStartpoint + paddleLength > ballTop &&
+        collisonLocation !== 'guest'
       ) {
         ballDeltaX *= -1;
+        collisonLocation = 'guest';
+
         setting.isVibrationMode && sendGuestPaddleVibration(roomData.gameId);
         setting.isPlayingSFX && playPaddleHitSound();
       }
