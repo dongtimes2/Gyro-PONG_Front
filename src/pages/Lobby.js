@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -19,6 +19,20 @@ export default function Lobby() {
   const setting = useRecoilValue(settingState);
 
   const navigate = useNavigate();
+
+  const handleEnterGame = useCallback(
+    (gameId) => {
+      navigate(`/game/${gameId}`);
+    },
+    [navigate],
+  );
+
+  const handleQuickJoin = useCallback(() => {
+    const result = gameList.find((game) => !game.isFull && !game.isStarted);
+    if (result) {
+      handleEnterGame(result.gameId);
+    }
+  }, [gameList, handleEnterGame]);
 
   useEffect(() => {
     requestGameList();
@@ -76,10 +90,13 @@ export default function Lobby() {
       setTimeout(() => {
         navigate('/');
       }, 500);
+    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡻') {
+      handleQuickJoin();
+      setMotionValueList([]);
     } else if (motionValueList.length >= 2) {
       setMotionValueList([]);
     }
-  }, [motionValueList, navigate]);
+  }, [motionValueList, navigate, handleQuickJoin]);
 
   const handleShowModal = () => {
     setIsShowingModal(true);
@@ -91,10 +108,6 @@ export default function Lobby() {
     }
 
     setIsShowingModal(false);
-  };
-
-  const handleEnterGame = (gameId) => {
-    navigate(`/game/${gameId}`);
   };
 
   const handleButtonSound = (event) => {
@@ -145,13 +158,19 @@ export default function Lobby() {
             <div className="button-area">
               <button type="button" onClick={handleShowModal}>
                 {setting.isChangedPageByMotion && (
-                  <span>&#129144; &#129146;</span>
+                  <span className="arrow-area">&#129144; &#129146;</span>
                 )}{' '}
                 게임 생성하기
               </button>
+              <button type="button" onClick={handleQuickJoin}>
+                {setting.isChangedPageByMotion && (
+                  <span className="arrow-area">&#129145; &#129147;</span>
+                )}{' '}
+                빠른 입장
+              </button>
               <Link to="/">
                 {setting.isChangedPageByMotion && (
-                  <span>&#129145; &#129144;</span>
+                  <span className="arrow-area">&#129145; &#129144;</span>
                 )}{' '}
                 뒤로가기
               </Link>
@@ -179,9 +198,12 @@ export default function Lobby() {
         <ModalPortal>
           <Modal onClose={setIsShowingModal}>
             <ModalContentWrap>
-              <CreateGame />
+              <CreateGame onclose={setIsShowingModal} />
               <div className="button-area">
                 <button type="button" onClick={handleCloseModal}>
+                  {setting.isChangedPageByMotion && (
+                    <span className="arrow-area">&#129145; &#129144;</span>
+                  )}{' '}
                   나가기
                 </button>
               </div>
@@ -250,6 +272,10 @@ const ModalContentWrap = styled.div`
     color: #00ff2b;
     background-color: black;
   }
+
+  .arrow-area {
+    font-size: 30px;
+  }
 `;
 
 const LobbyWrap = styled.div`
@@ -295,13 +321,17 @@ const LobbyWrap = styled.div`
     flex-basis: 5%;
   }
 
-  a {
+  .button-area a {
     padding: 20px 50px;
     font-size: 30px;
   }
 
   .button-area button {
     padding: 20px 50px;
+    font-size: 30px;
+  }
+
+  .arrow-area {
     font-size: 30px;
   }
 `;
