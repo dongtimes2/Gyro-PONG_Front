@@ -21,6 +21,7 @@ import {
   sendJoinGame,
   sendRoomIsFull,
   sendRoomIsNotFull,
+  sendToggleMotionButton,
   socket,
   userExitGame,
 } from '../utils/socketAPI';
@@ -34,6 +35,7 @@ export default function Game() {
   const [isForfeit, setIsForfeit] = useState(false);
   const [hasErrorOccurred, setHasErrorOccurred] = useState(false);
   const [roomData, setRoomData] = useState({});
+  const [motionValueList, setMotionValueList] = useState([]);
   const user = useRecoilValue(userState);
   const setting = useRecoilValue(settingState);
   const gameRef = useRef(null);
@@ -137,6 +139,66 @@ export default function Game() {
     setting.isCompletedMotionSettings,
   ]);
 
+  useEffect(() => {
+    socket.on(SocketEvent.RECEIVE_MOVE_UP, () => {
+      setMotionValueList((prev) => [...prev, '🡹']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_MOVE_DOWN, () => {
+      setMotionValueList((prev) => [...prev, '🡻']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_MOVE_LEFT, () => {
+      setMotionValueList((prev) => [...prev, '🡸']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_MOVE_RIGHT, () => {
+      setMotionValueList((prev) => [...prev, '🡺']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_STOP_DETECT_MOTION, () => {
+      setMotionValueList([]);
+    });
+
+    return () => {
+      socket.off(SocketEvent.RECEIVE_MOVE_UP);
+      socket.off(SocketEvent.RECEIVE_MOVE_DOWN);
+      socket.off(SocketEvent.RECEIVE_MOVE_LEFT);
+      socket.off(SocketEvent.RECEIVE_MOVE_RIGHT);
+      socket.off(SocketEvent.RECEIVE_STOP_DETECT_MOTION);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      !hasErrorOccurred &&
+      motionValueList[0] === '🡹' &&
+      motionValueList[1] === '🡻'
+    ) {
+      if (isUserHost && isAbleToStart) {
+        setTimeout(() => {
+          sendGameStart(params.gameId);
+        }, 500);
+      }
+      setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
+    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
+      naviagte('/lobby');
+      sendToggleMotionButton(user.controllerId);
+    } else if (motionValueList.length >= 2) {
+      setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
+    }
+  }, [
+    motionValueList,
+    isUserHost,
+    hasErrorOccurred,
+    params.gameId,
+    naviagte,
+    isAbleToStart,
+    user.controllerId,
+  ]);
+
   const handleGuestExit = () => {
     naviagte('/lobby');
   };
@@ -167,10 +229,22 @@ export default function Game() {
     <>
       <GameWrap ref={gameRef} onClick={handleButtonSound}>
         {hasErrorOccurred || !setting.isCompletedMotionSettings ? (
-          <div className="error-area">
-            <div>게임에 입장할 수 없습니다</div>
-            <Link to="/lobby">나가기</Link>
-          </div>
+          <>
+            <div className="error-area">
+              <div>게임에 입장할 수 없습니다</div>
+              <Link to="/lobby">
+                {setting.isChangedPageByMotion && (
+                  <span className="arrow-area">&#129145; &#129144;</span>
+                )}{' '}
+                나가기
+              </Link>
+            </div>
+            {setting.isChangedPageByMotion && (
+              <>
+                <div className="motion-value-area">{motionValueList}</div>
+              </>
+            )}
+          </>
         ) : (
           <>
             {isGameStarted ? (
@@ -182,22 +256,50 @@ export default function Game() {
                 ></Pong>
               </>
             ) : (
-              <div className="waiting-area">
-                {isUserHost ? (
+              <>
+                <div className="waiting-area">
+                  {isUserHost ? (
+                    <>
+                      {isAbleToStart ? (
+                        <button type="button" onClick={handleGameStart}>
+                          {setting.isChangedPageByMotion && (
+                            <span className="arrow-area">
+                              &#129145; &#129147;
+                            </span>
+                          )}{' '}
+                          게임 시작하기
+                        </button>
+                      ) : (
+                        <Loading />
+                      )}
+                      <button type="button" onClick={handleHostExit}>
+                        {setting.isChangedPageByMotion && (
+                          <span className="arrow-area">
+                            &#129145; &#129144;
+                          </span>
+                        )}{' '}
+                        방 삭제하고 나가기
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button type="button" onClick={handleGuestExit}>
+                        {setting.isChangedPageByMotion && (
+                          <span className="arrow-area">
+                            &#129145; &#129144;
+                          </span>
+                        )}{' '}
+                        나가기
+                      </button>
+                    </>
+                  )}
+                </div>
+                {setting.isChangedPageByMotion && (
                   <>
-                    {isAbleToStart ? (
-                      <button onClick={handleGameStart}>게임 시작하기</button>
-                    ) : (
-                      <Loading />
-                    )}
-                    <button onClick={handleHostExit}>방 삭제하고 나가기</button>
-                  </>
-                ) : (
-                  <>
-                    <button onClick={handleGuestExit}>나가기</button>
+                    <div className="motion-value-area">{motionValueList}</div>
                   </>
                 )}
-              </div>
+              </>
             )}
           </>
         )}
@@ -231,16 +333,12 @@ const GameWrap = styled.div`
   width: 100vw;
   height: 100vh;
 
-  .title-area {
-    font-size: 50px;
-  }
-
   .waiting-area {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
+    flex-basis: 95%;
     width: 100%;
     font-size: 50px;
   }
@@ -251,12 +349,23 @@ const GameWrap = styled.div`
     padding: 10px 30px;
   }
 
+  .arrow-area {
+    font-size: 50px;
+  }
+
+  .motion-value-area {
+    display: flex;
+    justify-content: center;
+    flex-basis: 5%;
+    font-size: 30px;
+  }
+
   .error-area {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
+    flex-basis: 95%;
     width: 100%;
     font-size: 50px;
   }

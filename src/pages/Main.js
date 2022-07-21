@@ -6,12 +6,14 @@ import styled from 'styled-components';
 
 import SocketEvent from '../constants/socket';
 import settingState from '../recoil/settingState';
+import userState from '../recoil/userState';
 import { playClickSound } from '../utils/playSound';
-import { socket } from '../utils/socketAPI';
+import { sendToggleMotionButton, socket } from '../utils/socketAPI';
 
 export default function Main() {
   const [motionValueList, setMotionValueList] = useState([]);
   const setting = useRecoilValue(settingState);
+  const user = useRecoilValue(userState);
 
   const navigate = useNavigate();
 
@@ -59,6 +61,7 @@ export default function Main() {
       setTimeout(() => {
         navigate('/settings');
       }, 500);
+      sendToggleMotionButton(user.controllerId);
     } else if (
       motionValueList[0] === '🡹' &&
       motionValueList[1] === '🡻' &&
@@ -67,14 +70,22 @@ export default function Main() {
       setTimeout(() => {
         navigate('/lobby');
       }, 500);
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡺') {
       setTimeout(() => {
         navigate('/guides');
       }, 500);
+      sendToggleMotionButton(user.controllerId);
     } else if (motionValueList.length >= 2) {
       setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
     }
-  }, [motionValueList, navigate, setting.isCompletedMotionSettings]);
+  }, [
+    motionValueList,
+    navigate,
+    setting.isCompletedMotionSettings,
+    user.controllerId,
+  ]);
 
   const handleGoToLobby = () => {
     navigate('/lobby');
@@ -98,6 +109,7 @@ export default function Main() {
           설정
         </Link>
         <button
+          type="button"
           disabled={!setting.isCompletedMotionSettings}
           onClick={handleGoToLobby}
         >
