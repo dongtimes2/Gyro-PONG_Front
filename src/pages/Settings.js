@@ -31,27 +31,26 @@ export default function Settings() {
   const handleToggleButton = (event) => {
     switch (event.target.name) {
       case 'vibration':
-        setSetting({
-          ...setting,
-          isVibrationMode: !setting.isVibrationMode,
+        setSetting((prev) => {
+          return { ...prev, isVibrationMode: !prev.isVibrationMode };
         });
         break;
       case 'music':
-        setSetting({
-          ...setting,
-          isPlayingMusic: !setting.isPlayingMusic,
+        setSetting((prev) => {
+          return { ...prev, isPlayingMusic: !prev.isPlayingMusic };
         });
         break;
       case 'sfx':
-        setSetting({
-          ...setting,
-          isPlayingSFX: !setting.isPlayingSFX,
+        setSetting((prev) => {
+          return { ...prev, isPlayingSFX: !prev.isPlayingSFX };
         });
         break;
       case 'motion':
-        setSetting({
-          ...setting,
-          isChangedPageByMotion: !setting.isChangedPageByMotion,
+        setSetting((prev) => {
+          return {
+            ...prev,
+            isChangedPageByMotion: !prev.isChangedPageByMotion,
+          };
         });
         break;
       default:
@@ -96,25 +95,27 @@ export default function Settings() {
   }, [setting.isChangedPageByMotion, setting.isCompatible, user.controllerId]);
 
   useEffect(() => {
-    socket.on(SocketEvent.RECEIVE_MOVE_UP, () => {
-      setMotionValueList((prev) => [...prev, '🡹']);
-    });
+    if (!isShowingModal) {
+      socket.on(SocketEvent.RECEIVE_MOVE_UP, () => {
+        setMotionValueList((prev) => [...prev, '🡹']);
+      });
 
-    socket.on(SocketEvent.RECEIVE_MOVE_DOWN, () => {
-      setMotionValueList((prev) => [...prev, '🡻']);
-    });
+      socket.on(SocketEvent.RECEIVE_MOVE_DOWN, () => {
+        setMotionValueList((prev) => [...prev, '🡻']);
+      });
 
-    socket.on(SocketEvent.RECEIVE_MOVE_LEFT, () => {
-      setMotionValueList((prev) => [...prev, '🡸']);
-    });
+      socket.on(SocketEvent.RECEIVE_MOVE_LEFT, () => {
+        setMotionValueList((prev) => [...prev, '🡸']);
+      });
 
-    socket.on(SocketEvent.RECEIVE_MOVE_RIGHT, () => {
-      setMotionValueList((prev) => [...prev, '🡺']);
-    });
+      socket.on(SocketEvent.RECEIVE_MOVE_RIGHT, () => {
+        setMotionValueList((prev) => [...prev, '🡺']);
+      });
 
-    socket.on(SocketEvent.RECEIVE_STOP_DETECT_MOTION, () => {
-      setMotionValueList([]);
-    });
+      socket.on(SocketEvent.RECEIVE_STOP_DETECT_MOTION, () => {
+        setMotionValueList([]);
+      });
+    }
 
     socket.on(SocketEvent.RECEIVE_EXIT, () => {
       handleCloseModal();
@@ -133,19 +134,46 @@ export default function Settings() {
       socket.off(SocketEvent.RECEIVE_MOVE_RIGHT);
       socket.off(SocketEvent.RECEIVE_STOP_DETECT_MOTION);
     };
-  }, [handleCloseModal]);
+  }, [handleCloseModal, isShowingModal]);
 
   useEffect(() => {
     if (motionValueList[0] === '🡻' && motionValueList[1] === '🡺') {
       setTimeout(() => {
         navigate('/');
       }, 500);
+      setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
+    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
+      handleSetConnection();
+      setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
+    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡺') {
+      handleSetMotion();
+      setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
+    } else if (motionValueList[0] === '🡺' && motionValueList[1] === '🡹') {
+      setSetting((prev) => {
+        return { ...prev, isVibrationMode: !prev.isVibrationMode };
+      });
+      setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
+    } else if (motionValueList[0] === '🡺' && motionValueList[1] === '🡸') {
+      setSetting((prev) => {
+        return { ...prev, isPlayingMusic: !prev.isPlayingMusic };
+      });
+      setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
+    } else if (motionValueList[0] === '🡺' && motionValueList[1] === '🡻') {
+      setSetting((prev) => {
+        return { ...prev, isPlayingSFX: !prev.isPlayingSFX };
+      });
+      setMotionValueList([]);
       sendToggleMotionButton(user.controllerId);
     } else if (motionValueList.length >= 2) {
       setMotionValueList([]);
       sendToggleMotionButton(user.controllerId);
     }
-  }, [motionValueList, navigate, user.controllerId]);
+  }, [motionValueList, navigate, user.controllerId, setSetting]);
 
   musicController(setting.isPlayingMusic);
 
@@ -156,6 +184,9 @@ export default function Settings() {
         <div className="content-area">
           <div className="toggle-button-area">
             <button type="button" name="vibration" onClick={handleToggleButton}>
+              {setting.isChangedPageByMotion && (
+                <span className="arrow-area">&#129146; &#129145;</span>
+              )}{' '}
               진동
             </button>
             <div className="status-box" data-testid="vibration">
@@ -164,6 +195,9 @@ export default function Settings() {
           </div>
           <div className="toggle-button-area">
             <button type="button" name="music" onClick={handleToggleButton}>
+              {setting.isChangedPageByMotion && (
+                <span className="arrow-area">&#129146; &#129144;</span>
+              )}{' '}
               배경음악
             </button>
             <div className="status-box" data-testid="music">
@@ -172,6 +206,9 @@ export default function Settings() {
           </div>
           <div className="toggle-button-area">
             <button type="button" name="sfx" onClick={handleToggleButton}>
+              {setting.isChangedPageByMotion && (
+                <span className="arrow-area">&#129146; &#129147;</span>
+              )}{' '}
               효과음
             </button>
             <div className="status-box" data-testid="sfx">
@@ -189,17 +226,25 @@ export default function Settings() {
             </div>
           )}
           <button type="button" onClick={handleSetConnection}>
+            {setting.isChangedPageByMotion && (
+              <span className="arrow-area">&#129145; &#129144;</span>
+            )}{' '}
             컨트롤러 연결 설정
           </button>
           {setting.isCompatible && (
             <button type="button" onClick={handleSetMotion}>
+              {setting.isChangedPageByMotion && (
+                <span className="arrow-area">&#129145; &#129146;</span>
+              )}{' '}
               컨트롤러 움직임 범위 설정
             </button>
           )}
         </div>
         <div className="button-area">
           <Link to="/">
-            {setting.isChangedPageByMotion && <span>&#129147; &#129146;</span>}{' '}
+            {setting.isChangedPageByMotion && (
+              <span className="arrow-area">&#129147; &#129146;</span>
+            )}{' '}
             메인 화면으로 돌아가기
           </Link>
         </div>
@@ -220,6 +265,7 @@ export default function Settings() {
                   userId={user.id}
                   isCheckingCompatibility={setting.isCheckingCompatibility}
                   isCompatible={setting.isCompatible}
+                  onclose={handleCloseModal}
                 />
               )}
               {modalContentPage === ModalContentPage.MOTION && (
@@ -227,6 +273,9 @@ export default function Settings() {
               )}
               <div className="button-area">
                 <button type="button" onClick={handleCloseModal}>
+                  {setting.isChangedPageByMotion && (
+                    <span className="arrow-area">&#129145; &#129144;</span>
+                  )}{' '}
                   나가기
                 </button>
               </div>
@@ -266,6 +315,10 @@ const ModalContentWrap = styled.div`
   .button-area button:active {
     color: #00ff2b;
     background-color: black;
+  }
+
+  .arrow-area {
+    font-size: 30px;
   }
 `;
 
@@ -335,5 +388,9 @@ const SettingsWrap = styled.div`
   button {
     padding: 10px 100px;
     font-size: 40px;
+  }
+
+  .arrow-area {
+    font-size: 30px;
   }
 `;

@@ -49,6 +49,7 @@ function App() {
           isCheckingCompatibility: false,
           isCompatible: false,
           isCompletedMotionSettings: false,
+          isChangedPageByMotion: false,
           left: 0,
           right: 0,
         };

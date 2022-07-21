@@ -1,12 +1,19 @@
+import { useCallback, useEffect, useState } from 'react';
+
 import PropTypes from 'prop-types';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import SocketEvent from '../constants/socket';
 import settingState from '../recoil/settingState';
 import userState from '../recoil/userState';
 import controllerUrlGenerator from '../utils/controllerUrlGenerator';
 import { playClickSound } from '../utils/playSound';
-import { disconnectController } from '../utils/socketAPI';
+import {
+  disconnectController,
+  sendToggleMotionButton,
+  socket,
+} from '../utils/socketAPI';
 import urlCopier from '../utils/urlCopier';
 
 import Qrcode from './Qrcode';
@@ -16,10 +23,64 @@ const ConnectionInfo = ({
   userId,
   isCheckingCompatibility,
   isCompatible,
+  onclose,
 }) => {
+  const [motionValueList, setMotionValueList] = useState([]);
   const user = useRecoilValue(userState);
   const setting = useRecoilValue(settingState);
   const controllerUrl = controllerUrlGenerator(userId);
+
+  const handleDisconnect = useCallback(() => {
+    disconnectController({
+      sender: 'settingPage',
+      controllerId: user.controllerId,
+    });
+  }, [user.controllerId]);
+
+  useEffect(() => {
+    socket.on(SocketEvent.RECEIVE_MOVE_UP, () => {
+      setMotionValueList((prev) => [...prev, '🡹']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_MOVE_DOWN, () => {
+      setMotionValueList((prev) => [...prev, '🡻']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_MOVE_LEFT, () => {
+      setMotionValueList((prev) => [...prev, '🡸']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_MOVE_RIGHT, () => {
+      setMotionValueList((prev) => [...prev, '🡺']);
+    });
+
+    socket.on(SocketEvent.RECEIVE_STOP_DETECT_MOTION, () => {
+      setMotionValueList([]);
+    });
+
+    return () => {
+      socket.off(SocketEvent.RECEIVE_MOVE_UP);
+      socket.off(SocketEvent.RECEIVE_MOVE_DOWN);
+      socket.off(SocketEvent.RECEIVE_MOVE_LEFT);
+      socket.off(SocketEvent.RECEIVE_MOVE_RIGHT);
+      socket.off(SocketEvent.RECEIVE_STOP_DETECT_MOTION);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (motionValueList[0] === '🡸' && motionValueList[1] === '🡺') {
+      handleDisconnect();
+      setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
+    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
+      onclose();
+      setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
+    } else if (motionValueList.length >= 2) {
+      setMotionValueList([]);
+      sendToggleMotionButton(user.controllerId);
+    }
+  }, [motionValueList, onclose, user.controllerId, handleDisconnect]);
 
   const handleCopyLink = () => {
     urlCopier(controllerUrl);
@@ -29,13 +90,6 @@ const ConnectionInfo = ({
     if (event.target.nodeName === 'BUTTON' && setting.isPlayingSFX) {
       playClickSound();
     }
-  };
-
-  const handleDisconnect = () => {
-    disconnectController({
-      sender: 'settingPage',
-      controllerId: user.controllerId,
-    });
   };
 
   return (
@@ -63,8 +117,16 @@ const ConnectionInfo = ({
                 <div className="icon-area">
                   <div>ok</div>
                 </div>
+                <div className="motion-value-area">
+                  {setting.isChangedPageByMotion && <>{motionValueList}</>}
+                </div>
                 <div className="button-area">
-                  <button onClick={handleDisconnect}>기기 연결 끊기</button>
+                  <button type="button" onClick={handleDisconnect}>
+                    {setting.isChangedPageByMotion && (
+                      <span className="arrow-area">&#129144; &#129146;</span>
+                    )}{' '}
+                    기기 연결 끊기
+                  </button>
                 </div>
               </>
             ) : (
@@ -79,7 +141,9 @@ const ConnectionInfo = ({
                   <div>error</div>
                 </div>
                 <div className="button-area">
-                  <button onClick={handleDisconnect}>기기 연결 끊기</button>
+                  <button type="button" onClick={handleDisconnect}>
+                    기기 연결 끊기
+                  </button>
                 </div>
               </>
             ))}
@@ -96,7 +160,9 @@ const ConnectionInfo = ({
             <div>{controllerUrl}</div>
           </div>
           <div className="button-area">
-            <button onClick={handleCopyLink}>링크 복사하기</button>
+            <button type="button" onClick={handleCopyLink}>
+              링크 복사하기
+            </button>
           </div>
         </>
       )}
@@ -109,6 +175,7 @@ ConnectionInfo.propTypes = {
   userId: PropTypes.string.isRequired,
   isCheckingCompatibility: PropTypes.bool.isRequired,
   isCompatible: PropTypes.bool.isRequired,
+  onclose: PropTypes.func.isRequired,
 };
 
 const ConnectionInfoWrap = styled.div`
@@ -137,9 +204,17 @@ const ConnectionInfoWrap = styled.div`
 
   .icon-area {
     display: flex;
-    flex-basis: 75%;
+    flex-basis: 70%;
     font-size: 150px;
     align-items: center;
+  }
+
+  .motion-value-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-basis: 5%;
+    font-size: 30px;
   }
 
   .link-area {
@@ -175,6 +250,10 @@ const ConnectionInfoWrap = styled.div`
   .button-area button:active {
     background-color: black;
     color: #00ff2b;
+  }
+
+  .arrow-area {
+    font-size: 30px;
   }
 `;
 
