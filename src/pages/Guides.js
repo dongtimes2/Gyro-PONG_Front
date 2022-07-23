@@ -162,7 +162,7 @@ export default function Guide() {
           {page > 1 && (
             <button type="button" onClick={handleGoPrevPage}>
               {setting.isChangedPageByMotion && (
-                <span className="arrow-area">&#129145; &#129144;</span>
+                <span className="arrow-area">⇧ ⇦</span>
               )}{' '}
               이전
             </button>
@@ -170,15 +170,15 @@ export default function Guide() {
         </div>
         <div className="center-area">
           <Link to="/">
-            {setting.isChangedPageByMotion && <span>&#129147; &#129144;</span>}{' '}
-            메인 화면으로 돌아가기
+            {setting.isChangedPageByMotion && <span>⇩ ⇦</span>} 메인 화면으로
+            돌아가기
           </Link>
         </div>
         <div className="right-area">
           {page < 3 && (
             <button type="button" onClick={handleGoNextPage}>
               {setting.isChangedPageByMotion && (
-                <span className="arrow-area">&#129145; &#129146;</span>
+                <span className="arrow-area">⇧ ⇨</span>
               )}{' '}
               다음
             </button>

@@ -104,7 +104,7 @@ export default function Main() {
       <div className="button-area">
         <Link to="/settings">
           {setting.isChangedPageByMotion && (
-            <span className="arrow-area">&#129145; &#129144;</span>
+            <span className="arrow-area">⇧ ⇦</span>
           )}{' '}
           설정
         </Link>
@@ -114,13 +114,13 @@ export default function Main() {
           onClick={handleGoToLobby}
         >
           {setting.isChangedPageByMotion && (
-            <span className="arrow-area">&#129145; &#129147;</span>
+            <span className="arrow-area">⇧ ⇩</span>
           )}{' '}
           게임 시작
         </button>
         <Link to="/guides">
           {setting.isChangedPageByMotion && (
-            <span className="arrow-area">&#129145; &#129146;</span>
+            <span className="arrow-area">⇧ ⇨</span>
           )}{' '}
           도움말
         </Link>

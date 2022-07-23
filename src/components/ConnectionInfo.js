@@ -123,7 +123,7 @@ const ConnectionInfo = ({
                 <div className="button-area">
                   <button type="button" onClick={handleDisconnect}>
                     {setting.isChangedPageByMotion && (
-                      <span className="arrow-area">&#129144; &#129146;</span>
+                      <span className="arrow-area">⇦ ⇨</span>
                     )}{' '}
                     기기 연결 끊기
                   </button>

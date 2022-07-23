@@ -168,19 +168,19 @@ export default function Lobby() {
             <div className="button-area">
               <button type="button" onClick={handleShowModal}>
                 {setting.isChangedPageByMotion && (
-                  <span className="arrow-area">&#129144; &#129146;</span>
+                  <span className="arrow-area">⇦ ⇨</span>
                 )}{' '}
                 게임 생성하기
               </button>
               <button type="button" onClick={handleQuickJoin}>
                 {setting.isChangedPageByMotion && (
-                  <span className="arrow-area">&#129145; &#129147;</span>
+                  <span className="arrow-area">⇧ ⇩</span>
                 )}{' '}
                 빠른 입장
               </button>
               <Link to="/">
                 {setting.isChangedPageByMotion && (
-                  <span className="arrow-area">&#129145; &#129144;</span>
+                  <span className="arrow-area">⇧ ⇦</span>
                 )}{' '}
                 뒤로가기
               </Link>
@@ -212,7 +212,7 @@ export default function Lobby() {
               <div className="button-area">
                 <button type="button" onClick={handleCloseModal}>
                   {setting.isChangedPageByMotion && (
-                    <span className="arrow-area">&#129145; &#129144;</span>
+                    <span className="arrow-area">⇧ ⇦</span>
                   )}{' '}
                   나가기
                 </button>

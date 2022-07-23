@@ -185,7 +185,7 @@ export default function Settings() {
           <div className="toggle-button-area">
             <button type="button" name="vibration" onClick={handleToggleButton}>
               {setting.isChangedPageByMotion && (
-                <span className="arrow-area">&#129146; &#129145;</span>
+                <span className="arrow-area">⇨ ⇧</span>
               )}{' '}
               진동
             </button>
@@ -196,7 +196,7 @@ export default function Settings() {
           <div className="toggle-button-area">
             <button type="button" name="music" onClick={handleToggleButton}>
               {setting.isChangedPageByMotion && (
-                <span className="arrow-area">&#129146; &#129144;</span>
+                <span className="arrow-area">⇨ ⇦</span>
               )}{' '}
               배경음악
             </button>
@@ -207,7 +207,7 @@ export default function Settings() {
           <div className="toggle-button-area">
             <button type="button" name="sfx" onClick={handleToggleButton}>
               {setting.isChangedPageByMotion && (
-                <span className="arrow-area">&#129146; &#129147;</span>
+                <span className="arrow-area">⇨ ⇩</span>
               )}{' '}
               효과음
             </button>
@@ -227,14 +227,14 @@ export default function Settings() {
           )}
           <button type="button" onClick={handleSetConnection}>
             {setting.isChangedPageByMotion && (
-              <span className="arrow-area">&#129145; &#129144;</span>
+              <span className="arrow-area">⇧ ⇦</span>
             )}{' '}
             컨트롤러 연결 설정
           </button>
           {setting.isCompatible && (
             <button type="button" onClick={handleSetMotion}>
               {setting.isChangedPageByMotion && (
-                <span className="arrow-area">&#129145; &#129146;</span>
+                <span className="arrow-area">⇧ ⇨</span>
               )}{' '}
               컨트롤러 움직임 범위 설정
             </button>
@@ -243,7 +243,7 @@ export default function Settings() {
         <div className="button-area">
           <Link to="/">
             {setting.isChangedPageByMotion && (
-              <span className="arrow-area">&#129147; &#129146;</span>
+              <span className="arrow-area">⇩ ⇨</span>
             )}{' '}
             메인 화면으로 돌아가기
           </Link>
@@ -274,7 +274,7 @@ export default function Settings() {
               <div className="button-area">
                 <button type="button" onClick={handleCloseModal}>
                   {setting.isChangedPageByMotion && (
-                    <span className="arrow-area">&#129145; &#129144;</span>
+                    <span className="arrow-area">⇧ ⇦</span>
                   )}{' '}
                   나가기
                 </button>

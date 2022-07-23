@@ -118,7 +118,7 @@ const CreateGame = ({ onclose }) => {
         <div className="toggle-button-area">
           <div>
             {setting.isChangedPageByMotion && (
-              <span className="arrow-area">&#129146; &#129145;</span>
+              <span className="arrow-area">⇨ ⇧</span>
             )}{' '}
             난이도
           </div>
@@ -133,7 +133,7 @@ const CreateGame = ({ onclose }) => {
         <div className="toggle-button-area">
           <div>
             {setting.isChangedPageByMotion && (
-              <span className="arrow-area">&#129146; &#129147;</span>
+              <span className="arrow-area">⇨ ⇩</span>
             )}{' '}
             목표 점수
           </div>
@@ -152,7 +152,7 @@ const CreateGame = ({ onclose }) => {
       <div className="start-button-area">
         <button type="button" onClick={handleCreateGame}>
           {setting.isChangedPageByMotion && (
-            <span className="arrow-area">&#129144; &#129146;</span>
+            <span className="arrow-area">⇦ ⇨</span>
           )}{' '}
           게임 생성
         </button>

@@ -234,7 +234,7 @@ export default function Game() {
               <div>게임에 입장할 수 없습니다</div>
               <Link to="/lobby">
                 {setting.isChangedPageByMotion && (
-                  <span className="arrow-area">&#129145; &#129144;</span>
+                  <span className="arrow-area">⇧ ⇦</span>
                 )}{' '}
                 나가기
               </Link>
@@ -263,9 +263,7 @@ export default function Game() {
                       {isAbleToStart ? (
                         <button type="button" onClick={handleGameStart}>
                           {setting.isChangedPageByMotion && (
-                            <span className="arrow-area">
-                              &#129145; &#129147;
-                            </span>
+                            <span className="arrow-area">⇧ ⇩</span>
                           )}{' '}
                           게임 시작하기
                         </button>
@@ -274,9 +272,7 @@ export default function Game() {
                       )}
                       <button type="button" onClick={handleHostExit}>
                         {setting.isChangedPageByMotion && (
-                          <span className="arrow-area">
-                            &#129145; &#129144;
-                          </span>
+                          <span className="arrow-area">⇧ ⇦</span>
                         )}{' '}
                         방 삭제하고 나가기
                       </button>
@@ -285,9 +281,7 @@ export default function Game() {
                     <>
                       <button type="button" onClick={handleGuestExit}>
                         {setting.isChangedPageByMotion && (
-                          <span className="arrow-area">
-                            &#129145; &#129144;
-                          </span>
+                          <span className="arrow-area">⇧ ⇦</span>
                         )}{' '}
                         나가기
                       </button>
