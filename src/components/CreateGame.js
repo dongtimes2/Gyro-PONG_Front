@@ -58,19 +58,19 @@ const CreateGame = ({ onclose }) => {
 
   useEffect(() => {
     socket.on(SocketEvent.RECEIVE_MOVE_UP, () => {
-      setMotionValueList((prev) => [...prev, '🡹']);
+      setMotionValueList((prev) => [...prev, '⇧']);
     });
 
     socket.on(SocketEvent.RECEIVE_MOVE_DOWN, () => {
-      setMotionValueList((prev) => [...prev, '🡻']);
+      setMotionValueList((prev) => [...prev, '⇩']);
     });
 
     socket.on(SocketEvent.RECEIVE_MOVE_LEFT, () => {
-      setMotionValueList((prev) => [...prev, '🡸']);
+      setMotionValueList((prev) => [...prev, '⇦']);
     });
 
     socket.on(SocketEvent.RECEIVE_MOVE_RIGHT, () => {
-      setMotionValueList((prev) => [...prev, '🡺']);
+      setMotionValueList((prev) => [...prev, '⇨']);
     });
 
     socket.on(SocketEvent.RECEIVE_STOP_DETECT_MOTION, () => {
@@ -87,20 +87,20 @@ const CreateGame = ({ onclose }) => {
   }, []);
 
   useEffect(() => {
-    if (motionValueList[0] === '🡺' && motionValueList[1] === '🡹') {
+    if (motionValueList[0] === '⇨' && motionValueList[1] === '⇧') {
       handleChangeLevel();
       setMotionValueList([]);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡺' && motionValueList[1] === '🡻') {
+    } else if (motionValueList[0] === '⇨' && motionValueList[1] === '⇩') {
       handleChangeTagetScore();
       setMotionValueList([]);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡸' && motionValueList[1] === '🡺') {
+    } else if (motionValueList[0] === '⇦' && motionValueList[1] === '⇨') {
       setTimeout(() => {
         handleCreateGame();
       }, 100);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
+    } else if (motionValueList[0] === '⇧' && motionValueList[1] === '⇦') {
       setTimeout(() => {
         onclose(false);
       }, 100);

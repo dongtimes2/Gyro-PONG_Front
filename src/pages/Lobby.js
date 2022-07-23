@@ -57,19 +57,19 @@ export default function Lobby() {
   useEffect(() => {
     if (!isShowingModal) {
       socket.on(SocketEvent.RECEIVE_MOVE_UP, () => {
-        setMotionValueList((prev) => [...prev, '🡹']);
+        setMotionValueList((prev) => [...prev, '⇧']);
       });
 
       socket.on(SocketEvent.RECEIVE_MOVE_DOWN, () => {
-        setMotionValueList((prev) => [...prev, '🡻']);
+        setMotionValueList((prev) => [...prev, '⇩']);
       });
 
       socket.on(SocketEvent.RECEIVE_MOVE_LEFT, () => {
-        setMotionValueList((prev) => [...prev, '🡸']);
+        setMotionValueList((prev) => [...prev, '⇦']);
       });
 
       socket.on(SocketEvent.RECEIVE_MOVE_RIGHT, () => {
-        setMotionValueList((prev) => [...prev, '🡺']);
+        setMotionValueList((prev) => [...prev, '⇨']);
       });
 
       socket.on(SocketEvent.RECEIVE_STOP_DETECT_MOTION, () => {
@@ -87,18 +87,18 @@ export default function Lobby() {
   }, [isShowingModal]);
 
   useEffect(() => {
-    if (motionValueList[0] === '🡸' && motionValueList[1] === '🡺') {
+    if (motionValueList[0] === '⇦' && motionValueList[1] === '⇨') {
       setTimeout(() => {
         handleShowModal();
         setMotionValueList([]);
       }, 500);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
+    } else if (motionValueList[0] === '⇧' && motionValueList[1] === '⇦') {
       setTimeout(() => {
         navigate('/');
       }, 500);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡻') {
+    } else if (motionValueList[0] === '⇧' && motionValueList[1] === '⇩') {
       handleQuickJoin();
       setMotionValueList([]);
       sendToggleMotionButton(user.controllerId);

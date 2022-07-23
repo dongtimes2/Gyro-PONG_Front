@@ -97,19 +97,19 @@ export default function Settings() {
   useEffect(() => {
     if (!isShowingModal) {
       socket.on(SocketEvent.RECEIVE_MOVE_UP, () => {
-        setMotionValueList((prev) => [...prev, '🡹']);
+        setMotionValueList((prev) => [...prev, '⇧']);
       });
 
       socket.on(SocketEvent.RECEIVE_MOVE_DOWN, () => {
-        setMotionValueList((prev) => [...prev, '🡻']);
+        setMotionValueList((prev) => [...prev, '⇩']);
       });
 
       socket.on(SocketEvent.RECEIVE_MOVE_LEFT, () => {
-        setMotionValueList((prev) => [...prev, '🡸']);
+        setMotionValueList((prev) => [...prev, '⇦']);
       });
 
       socket.on(SocketEvent.RECEIVE_MOVE_RIGHT, () => {
-        setMotionValueList((prev) => [...prev, '🡺']);
+        setMotionValueList((prev) => [...prev, '⇨']);
       });
 
       socket.on(SocketEvent.RECEIVE_STOP_DETECT_MOTION, () => {
@@ -137,33 +137,33 @@ export default function Settings() {
   }, [handleCloseModal, isShowingModal]);
 
   useEffect(() => {
-    if (motionValueList[0] === '🡻' && motionValueList[1] === '🡺') {
+    if (motionValueList[0] === '⇩' && motionValueList[1] === '⇨') {
       setTimeout(() => {
         navigate('/');
       }, 500);
       setMotionValueList([]);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
+    } else if (motionValueList[0] === '⇧' && motionValueList[1] === '⇦') {
       handleSetConnection();
       setMotionValueList([]);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡺') {
+    } else if (motionValueList[0] === '⇧' && motionValueList[1] === '⇨') {
       handleSetMotion();
       setMotionValueList([]);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡺' && motionValueList[1] === '🡹') {
+    } else if (motionValueList[0] === '⇨' && motionValueList[1] === '⇧') {
       setSetting((prev) => {
         return { ...prev, isVibrationMode: !prev.isVibrationMode };
       });
       setMotionValueList([]);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡺' && motionValueList[1] === '🡸') {
+    } else if (motionValueList[0] === '⇨' && motionValueList[1] === '⇦') {
       setSetting((prev) => {
         return { ...prev, isPlayingMusic: !prev.isPlayingMusic };
       });
       setMotionValueList([]);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡺' && motionValueList[1] === '🡻') {
+    } else if (motionValueList[0] === '⇨' && motionValueList[1] === '⇩') {
       setSetting((prev) => {
         return { ...prev, isPlayingSFX: !prev.isPlayingSFX };
       });

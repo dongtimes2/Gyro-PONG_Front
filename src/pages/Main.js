@@ -28,19 +28,19 @@ export default function Main() {
 
   useEffect(() => {
     socket.on(SocketEvent.RECEIVE_MOVE_UP, () => {
-      setMotionValueList((prev) => [...prev, '🡹']);
+      setMotionValueList((prev) => [...prev, '⇧']);
     });
 
     socket.on(SocketEvent.RECEIVE_MOVE_DOWN, () => {
-      setMotionValueList((prev) => [...prev, '🡻']);
+      setMotionValueList((prev) => [...prev, '⇩']);
     });
 
     socket.on(SocketEvent.RECEIVE_MOVE_LEFT, () => {
-      setMotionValueList((prev) => [...prev, '🡸']);
+      setMotionValueList((prev) => [...prev, '⇦']);
     });
 
     socket.on(SocketEvent.RECEIVE_MOVE_RIGHT, () => {
-      setMotionValueList((prev) => [...prev, '🡺']);
+      setMotionValueList((prev) => [...prev, '⇨']);
     });
 
     socket.on(SocketEvent.RECEIVE_STOP_DETECT_MOTION, () => {
@@ -57,21 +57,21 @@ export default function Main() {
   }, []);
 
   useEffect(() => {
-    if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
+    if (motionValueList[0] === '⇧' && motionValueList[1] === '⇦') {
       setTimeout(() => {
         navigate('/settings');
       }, 500);
       sendToggleMotionButton(user.controllerId);
     } else if (
-      motionValueList[0] === '🡹' &&
-      motionValueList[1] === '🡻' &&
+      motionValueList[0] === '⇧' &&
+      motionValueList[1] === '⇩' &&
       setting.isCompletedMotionSettings
     ) {
       setTimeout(() => {
         navigate('/lobby');
       }, 500);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡺') {
+    } else if (motionValueList[0] === '⇧' && motionValueList[1] === '⇨') {
       setTimeout(() => {
         navigate('/guides');
       }, 500);

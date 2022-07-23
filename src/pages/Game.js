@@ -141,19 +141,19 @@ export default function Game() {
 
   useEffect(() => {
     socket.on(SocketEvent.RECEIVE_MOVE_UP, () => {
-      setMotionValueList((prev) => [...prev, '🡹']);
+      setMotionValueList((prev) => [...prev, '⇧']);
     });
 
     socket.on(SocketEvent.RECEIVE_MOVE_DOWN, () => {
-      setMotionValueList((prev) => [...prev, '🡻']);
+      setMotionValueList((prev) => [...prev, '⇩']);
     });
 
     socket.on(SocketEvent.RECEIVE_MOVE_LEFT, () => {
-      setMotionValueList((prev) => [...prev, '🡸']);
+      setMotionValueList((prev) => [...prev, '⇦']);
     });
 
     socket.on(SocketEvent.RECEIVE_MOVE_RIGHT, () => {
-      setMotionValueList((prev) => [...prev, '🡺']);
+      setMotionValueList((prev) => [...prev, '⇨']);
     });
 
     socket.on(SocketEvent.RECEIVE_STOP_DETECT_MOTION, () => {
@@ -172,8 +172,8 @@ export default function Game() {
   useEffect(() => {
     if (
       !hasErrorOccurred &&
-      motionValueList[0] === '🡹' &&
-      motionValueList[1] === '🡻'
+      motionValueList[0] === '⇧' &&
+      motionValueList[1] === '⇩'
     ) {
       if (isUserHost && isAbleToStart) {
         setTimeout(() => {
@@ -182,7 +182,7 @@ export default function Game() {
       }
       setMotionValueList([]);
       sendToggleMotionButton(user.controllerId);
-    } else if (motionValueList[0] === '🡹' && motionValueList[1] === '🡸') {
+    } else if (motionValueList[0] === '⇧' && motionValueList[1] === '⇦') {
       naviagte('/lobby');
       sendToggleMotionButton(user.controllerId);
     } else if (motionValueList.length >= 2) {
