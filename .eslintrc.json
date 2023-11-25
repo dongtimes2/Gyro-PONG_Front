@@ -16,6 +16,8 @@
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "plugin:react-hooks/recommended",
+    "plugin:jest-dom/recommended",
+    "plugin:testing-library/react",
     "prettier"
   ],
   "parserOptions": {
@@ -25,7 +27,13 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["react", "react-refresh", "import", "@typescript-eslint"],
+  "plugins": [
+    "react",
+    "react-refresh",
+    "import",
+    "testing-library",
+    "@typescript-eslint"
+  ],
   "ignorePatterns": ["node_modules/*", "build/*"],
   "parser": "@typescript-eslint/parser",
   "rules": {
@@ -49,6 +57,7 @@
         }
       }
     ],
+    "testing-library/no-node-access": "off",
     "react/no-unknown-property": ["error", { "ignore": ["css"] }]
   }
 }
