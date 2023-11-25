@@ -8,8 +8,10 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "allowJs": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@components/*": ["./src/components/*"],
+      "@pages/*": ["./src/pages/*"]
     },
 
     // Bundle
@@ -23,5 +25,5 @@
     "strict": true
   },
   "exclude": ["node_modules/*", "build"],
-  "include": ["src/**/*", "vite.comfig.ts"]
+  "include": ["src/**/*", "vite.config.ts"]
 }
