@@ -1,7 +1,8 @@
 const colors = {
   green: '#00ff2b',
+  black: '#000000',
 };
 
-const theme = { colors };
+export type Colors = keyof typeof colors;
 
-export default theme;
+export default { colors };
