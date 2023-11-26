@@ -1,7 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
 
-import theme from './theme';
-
 const GlobalStyles = createGlobalStyle`
   /*
   Josh's Custom CSS Reset
@@ -13,6 +11,7 @@ const GlobalStyles = createGlobalStyle`
     box-sizing: border-box;
   }
   * {
+    padding: 0;
     margin: 0;
   }
   html,
@@ -62,44 +61,10 @@ const GlobalStyles = createGlobalStyle`
 
   body {
     background-color: black;
-    color: ${theme.colors.green};
+    color: ${({ theme }) => theme.colors.green};
     font-family: 'DungGeunMo';
     user-select: none;
     overflow: hidden;
-  }
-
-  button {
-    color: ${theme.colors.green};
-    background-color: transparent;
-    border: 1px solid ${theme.colors.green};
-    font-family: 'DungGeunMo';
-    cursor: pointer;
-  }
-
-  button:hover {
-    color: black;
-    background-color: ${theme.colors.green};
-  }
-
-  button:active {
-    background-color: black;
-    color: ${theme.colors.green};
-  }
-
-  a {
-    color: ${theme.colors.green};
-    text-decoration: none;
-    border: 1px solid ${theme.colors.green};
-  }
-
-  a:hover {
-    color: black;
-    background-color: ${theme.colors.green};
-  }
-
-  a:active {
-    background-color: black;
-    color: ${theme.colors.green};
   }
 `;
 
