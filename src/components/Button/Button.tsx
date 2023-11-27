@@ -1,0 +1,95 @@
+import styled, { css } from 'styled-components';
+
+type Size = 'sm' | 'md' | 'lg';
+
+interface StyleProps {
+  size?: Size;
+}
+
+const ButtonSize = css<StyleProps>`
+  ${({ size = 'md' }) => {
+    if (size === 'sm') {
+      return css`
+        height: 4rem;
+        font-size: 2rem;
+      `;
+    }
+
+    if (size === 'md') {
+      return css`
+        height: 4.5rem;
+        font-size: 2.5rem;
+      `;
+    }
+
+    if (size === 'lg') {
+      return css`
+        height: 5rem;
+        font-size: 3rem;
+      `;
+    }
+  }}
+`;
+
+const ButtonStatus = css`
+  &:hover {
+    color: ${({ theme }) => theme.colors.black};
+    background-color: ${({ theme }) => theme.colors.green};
+  }
+
+  &:active {
+    color: ${({ theme }) => theme.colors.green};
+    background-color: ${({ theme }) => theme.colors.black};
+  }
+
+  &:disabled {
+    color: ${({ theme }) => theme.colors.green};
+    background-color: ${({ theme }) => theme.colors.black};
+    text-decoration: line-through;
+    opacity: 0.4;
+    cursor: default;
+  }
+`;
+
+const ButtonBase = styled.button<StyleProps>`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  min-width: 16rem;
+  height: 5rem;
+  color: ${({ theme }) => theme.colors.green};
+  background-color: ${({ theme }) => theme.colors.black};
+  border: 1px solid ${({ theme }) => theme.colors.green};
+  cursor: pointer;
+  user-select: none;
+
+  ${ButtonStatus}
+  ${ButtonSize}
+`;
+
+interface ButtonProps extends StyleProps {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  arrow?: string;
+  showArrow?: boolean;
+}
+
+const Button = ({
+  children,
+  onClick,
+  arrow,
+  showArrow,
+  ...rest
+}: ButtonProps) => {
+  return (
+    <ButtonBase onClick={onClick} {...rest}>
+      {children}
+      {showArrow && <p>{arrow}</p>}
+    </ButtonBase>
+  );
+};
+
+export default Button;
