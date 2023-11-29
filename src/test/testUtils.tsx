@@ -6,5 +6,5 @@ const customRender = (ui: React.ReactElement, options?: RenderOptions) => {
   render(ui, { wrapper: AppContainer, ...options });
 };
 
-export { screen } from '@testing-library/react';
+export { screen, act } from '@testing-library/react';
 export { customRender as render };
