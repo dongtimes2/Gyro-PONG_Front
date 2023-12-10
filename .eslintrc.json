@@ -35,7 +35,7 @@
     "testing-library",
     "@typescript-eslint"
   ],
-  "ignorePatterns": ["node_modules/*", "build/*"],
+  "ignorePatterns": ["node_modules/**/*", "build/**/*", "coverage/**/*"],
   "parser": "@typescript-eslint/parser",
   "rules": {
     "react-refresh/only-export-components": [
