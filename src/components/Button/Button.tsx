@@ -10,6 +10,7 @@ const ButtonSize = css<StyleProps>`
   ${({ size = 'md' }) => {
     if (size === 'sm') {
       return css`
+        min-height: 4rem;
         height: 4rem;
         font-size: 2rem;
       `;
@@ -17,6 +18,7 @@ const ButtonSize = css<StyleProps>`
 
     if (size === 'md') {
       return css`
+        min-height: 4.5rem;
         height: 4.5rem;
         font-size: 2.5rem;
       `;
@@ -24,6 +26,7 @@ const ButtonSize = css<StyleProps>`
 
     if (size === 'lg') {
       return css`
+        min-height: 5rem;
         height: 5rem;
         font-size: 3rem;
       `;
@@ -32,9 +35,11 @@ const ButtonSize = css<StyleProps>`
 `;
 
 const ButtonStatus = css`
-  &:hover {
-    color: ${({ theme }) => theme.colors.black};
-    background-color: ${({ theme }) => theme.colors.green};
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: ${({ theme }) => theme.colors.black};
+      background-color: ${({ theme }) => theme.colors.green};
+    }
   }
 
   &:active {
@@ -65,8 +70,8 @@ const ButtonBase = styled.button<StyleProps>`
   cursor: pointer;
   user-select: none;
 
-  ${ButtonStatus}
-  ${ButtonSize}
+  ${ButtonStatus};
+  ${ButtonSize};
 `;
 
 interface ButtonProps extends StyleProps {
