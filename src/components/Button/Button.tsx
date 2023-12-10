@@ -78,8 +78,7 @@ interface ButtonProps extends StyleProps {
   children: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
-  arrow?: string;
-  showArrow?: boolean;
+  $arrow?: string;
 }
 
 const Button = ({
@@ -92,7 +91,7 @@ const Button = ({
   return (
     <ButtonBase onClick={onClick} {...rest}>
       {children}
-      {showArrow && <p>{arrow}</p>}
+      {motion && <p>{$arrow}</p>}
     </ButtonBase>
   );
 };
