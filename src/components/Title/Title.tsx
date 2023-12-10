@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-type Size = 'sm' | 'md' | 'lg';
+type Size = 'xs' | 'sm' | 'md' | 'lg';
 
 interface StyleProps {
   size?: Size;
@@ -9,6 +9,13 @@ interface StyleProps {
 
 const TitleSize = css<StyleProps>`
   ${({ size = 'md' }) => {
+    if (size === 'xs') {
+      return css`
+        height: 3rem;
+        font-size: 2rem;
+      `;
+    }
+
     if (size === 'sm') {
       return css`
         height: 4.5rem;
