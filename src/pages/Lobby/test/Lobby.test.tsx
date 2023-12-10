@@ -2,13 +2,12 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { render as originalRender } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { act } from 'react-dom/test-utils';
 import { ThemeProvider } from 'styled-components';
 import { describe, test, expect, afterEach, beforeAll, afterAll } from 'vitest';
 
 import { useMotionStore } from 'src/store/motion';
 import theme from 'src/styles/theme';
-import { render, screen } from 'src/test/testUtils';
+import { render, screen, act } from 'src/test/testUtils';
 
 import Home from '@pages/Home/Home';
 
