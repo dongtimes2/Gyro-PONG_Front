@@ -1,5 +1,8 @@
 import styled, { css } from 'styled-components';
 
+import { useUserStore } from 'src/store/user';
+import { playClickSound } from 'src/utils/playSound';
+
 type Size = 'sm' | 'md' | 'lg';
 
 interface StyleProps {
@@ -81,15 +84,17 @@ interface ButtonProps extends StyleProps {
   $arrow?: string;
 }
 
-const Button = ({
-  children,
-  onClick,
-  arrow,
-  showArrow,
-  ...rest
-}: ButtonProps) => {
+const Button = ({ children, onClick, $arrow, ...rest }: ButtonProps) => {
+  const sfx = useUserStore((state) => state.sfx);
+  const motion = useUserStore((state) => state.motion);
+
+  const handleClick = () => {
+    onClick && onClick();
+    sfx && playClickSound();
+  };
+
   return (
-    <ButtonBase onClick={onClick} {...rest}>
+    <ButtonBase onClick={handleClick} {...rest}>
       {children}
       {motion && <p>{$arrow}</p>}
     </ButtonBase>
