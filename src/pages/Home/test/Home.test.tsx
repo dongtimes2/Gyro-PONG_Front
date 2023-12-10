@@ -127,7 +127,7 @@ describe('모션을 이용한 화면 전환 테스트', () => {
     expect(titleElement).toBeInTheDocument();
   });
 
-  test('모션 인식 결과가 ⇨⇧일 경우, 설정 페이지로 이동해야 합니다', async () => {
+  test('모션 인식 결과가 ⇨⇧일 경우, 도움말 페이지로 이동해야 합니다', async () => {
     originalRender(
       <ThemeProvider theme={theme}>
         <MemoryRouter initialEntries={['/']}>
