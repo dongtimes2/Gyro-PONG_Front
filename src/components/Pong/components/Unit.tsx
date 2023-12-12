@@ -85,7 +85,7 @@ const Unit = ({
     // canvas의 스타일 정보를 설정한다.
     context.fillStyle = theme.colors.green;
     context.strokeStyle = theme.colors.green;
-    context.font = '2rem DungGeunMo';
+    context.font = '2rem NeoDunggeunmo';
 
     let requestId: number;
 
@@ -186,7 +186,7 @@ const Unit = ({
 
         if (
           // host paddle 옆면에 맞았을 때
-          0.0625 * canvasWidth <= ballX.current &&
+          0.0375 * canvasWidth <= ballX.current &&
           ballX.current <= 0.075 * canvasWidth &&
           hostPaddleY.current <= ballY.current &&
           ballY.current <=
@@ -218,7 +218,7 @@ const Unit = ({
           console.log('상단맞음');
         } else if (
           // host paddle 하단에 맞았을 때
-          canvasWidth / 20 <= ballX.current &&
+          0.0375 * canvasWidth <= ballX.current &&
           ballX.current <= 0.075 * canvasWidth &&
           hostPaddleY.current + paddleLength.current - canvasWidth / 40 <=
             ballY.current &&
@@ -238,7 +238,7 @@ const Unit = ({
         if (
           // guest paddle 옆면에 맞았을 때
           0.9 * canvasWidth <= ballX.current &&
-          ballX.current <= 0.9125 * canvasWidth &&
+          ballX.current <= 0.9375 * canvasWidth &&
           guestPaddleY.current <= ballY.current &&
           ballY.current <=
             guestPaddleY.current + paddleLength.current - canvasWidth / 40 &&
@@ -270,7 +270,7 @@ const Unit = ({
         } else if (
           // guest paddle 하단에 맞았을 때
           0.9 * canvasWidth <= ballX.current &&
-          ballX.current <= 0.925 * canvasWidth &&
+          ballX.current <= 0.9375 * canvasWidth &&
           guestPaddleY.current + paddleLength.current - canvasWidth / 40 <=
             ballY.current &&
           ballY.current <= guestPaddleY.current + paddleLength.current &&
