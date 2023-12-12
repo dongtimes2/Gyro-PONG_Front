@@ -8,7 +8,6 @@ const LayoutBase = styled.div`
   header {
     width: 100%;
     min-height: 5rem;
-    background-color: #141414;
     padding: 0 5rem;
   }
 
