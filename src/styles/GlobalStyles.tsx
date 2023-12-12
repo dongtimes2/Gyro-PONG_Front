@@ -49,16 +49,18 @@ const GlobalStyles = createGlobalStyle`
 
   /* font */
   @font-face {
-    font-family: 'DungGeunMo';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+    font-family: 'NeoDunggeunmo';
+    src: url('https://cdn.jsdelivr.net/gh/webfontworld/neodgm/NeoDunggeunmo.woff2') format('woff2'),
+    url('https://cdn.jsdelivr.net/gh/webfontworld/neodgm/NeoDunggeunmo.woff') format('woff');
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
   }
 
   body {
     background-color: black;
     color: ${({ theme }) => theme.colors.green};
-    font-family: 'DungGeunMo';
+    font-family: 'NeoDunggeunmo';
     user-select: none;
     overflow: hidden;
   }
