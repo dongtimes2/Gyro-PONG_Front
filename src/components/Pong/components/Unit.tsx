@@ -85,7 +85,8 @@ const Unit = ({
     // canvas의 스타일 정보를 설정한다.
     context.fillStyle = theme.colors.green;
     context.strokeStyle = theme.colors.green;
-    context.font = '2rem NeoDunggeunmo';
+    context.textAlign = 'center';
+    context.font = '5rem NeoDunggeunmo';
 
     let requestId: number;
 
@@ -115,14 +116,14 @@ const Unit = ({
 
       context.fillText(
         String(hostScore.current),
-        canvasWidth / 2 - canvasWidth / 20,
-        canvasHeight / 10,
+        canvasWidth / 4,
+        canvasHeight / 4,
       );
 
       context.fillText(
         String(guestScore.current),
-        canvasWidth / 2 + canvasWidth / 20,
-        canvasHeight / 10,
+        canvasWidth - canvasWidth / 4,
+        canvasHeight / 4,
       );
 
       if (type === 'host') {
