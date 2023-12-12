@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import styled from 'styled-components';
 
@@ -31,6 +31,7 @@ interface GameInfo {
 
 const Game = () => {
   const { state }: { state: Type } = useLocation();
+  const navigate = useNavigate();
 
   const sfx = useUserStore((state) => state.sfx);
 
@@ -42,6 +43,10 @@ const Game = () => {
   });
 
   useEffect(() => {
+    if (!state) {
+      navigate('/not-found');
+    }
+
     const handlePreventRefresh = (event: BeforeUnloadEvent) => {
       event.preventDefault();
     };
@@ -65,7 +70,7 @@ const Game = () => {
       window.removeEventListener('beforeunload', handlePreventRefresh);
       window.removeEventListener('popstate', handlePreventGoBack);
     };
-  }, [state]);
+  }, [state, navigate]);
 
   return (
     <Layout>
