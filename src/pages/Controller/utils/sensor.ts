@@ -31,7 +31,7 @@ const handleOrientation = (event: DeviceOrientationEvent) => {
   }
 };
 
-let cacheY = 0;
+let cacheX = 0;
 let cacheZ = 0;
 
 let topBorder = 0;
@@ -58,16 +58,13 @@ const handleMotion = (event: DeviceOrientationEvent) => {
   }
 
   if (isInit && alpha && beta) {
-    console.log('init');
     cacheZ = alpha;
-    cacheY = beta;
+    cacheX = beta;
     isInit = false;
   }
 
-  console.log(topBorder, bottomBorder, leftBorder, rightBorder, alpha, beta);
-
-  topBorder = cacheY + 20;
-  bottomBorder = cacheY - 20;
+  topBorder = cacheX + 20;
+  bottomBorder = cacheX - 20;
   leftBorder = cacheZ + 20;
   rightBorder = cacheZ - 20;
 
@@ -76,67 +73,31 @@ const handleMotion = (event: DeviceOrientationEvent) => {
       lastInput = 'up';
       hasSent = true;
       s_SendMotionUp();
-      console.log(
-        'up',
-        topBorder,
-        bottomBorder,
-        leftBorder,
-        rightBorder,
-        alpha,
-        beta,
-      );
     }
   } else if (beta < bottomBorder && !isInit) {
     if (lastInput !== 'down') {
       lastInput = 'down';
       hasSent = true;
       s_SendMotionDown();
-      console.log(
-        'down',
-        topBorder,
-        bottomBorder,
-        leftBorder,
-        rightBorder,
-        alpha,
-        beta,
-      );
     }
   } else if (alpha > leftBorder && !isInit) {
     if (lastInput !== 'left') {
       lastInput = 'left';
       hasSent = true;
       s_SendMotionLeft();
-      console.log(
-        'left',
-        topBorder,
-        bottomBorder,
-        leftBorder,
-        rightBorder,
-        alpha,
-        beta,
-      );
     }
   } else if (alpha < rightBorder && !isInit) {
     if (lastInput !== 'right') {
       lastInput = 'right';
       hasSent = true;
       s_SendMotionRight();
-      console.log(
-        'right',
-        topBorder,
-        bottomBorder,
-        leftBorder,
-        rightBorder,
-        alpha,
-        beta,
-      );
     }
   } else {
     hasSent = false;
   }
 
   if (hasSent) {
-    cacheY = beta;
+    cacheX = beta;
     cacheZ = alpha;
   }
 };
