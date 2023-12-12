@@ -29,6 +29,8 @@ const LayoutBase = styled.div`
       top: 20%;
       left: 50%;
       transform: translate(-50%, -20%);
+      width: 100%;
+      text-align: center;
       font-size: 1.25rem;
     }
   }
