@@ -64,9 +64,7 @@ const Unit = ({
   const ballDeltaY = useRef(canvasWidth / 140);
   const hitHostPaddle = useRef(false);
   const hitGuestPaddle = useRef(false);
-  const paddleLength = useRef(
-    level === '쉬움' ? canvasHeight / 5 : canvasHeight / 8,
-  );
+  const paddleLength = useRef(0);
   const acceleration = useRef(1.1);
   const hostScore = useRef(0);
   const guestScore = useRef(0);
@@ -87,6 +85,9 @@ const Unit = ({
     context.strokeStyle = theme.colors.green;
     context.textAlign = 'center';
     context.font = '5rem NeoDunggeunmo';
+
+    paddleLength.current =
+      level === '쉬움' ? canvasHeight / 5 : canvasHeight / 8;
 
     let requestId: number;
 
@@ -303,7 +304,7 @@ const Unit = ({
     return () => {
       window.cancelAnimationFrame(requestId);
     };
-  }, [canvasWidth, canvasHeight, type, targetScore, sfx]);
+  }, [canvasWidth, canvasHeight, type, targetScore, sfx, level]);
 
   useEffect(() => {
     socket.on(EVENT.SEND_GAME_DATA, (gameData: GameData) => {

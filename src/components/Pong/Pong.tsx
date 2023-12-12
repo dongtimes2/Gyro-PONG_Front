@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import styled from 'styled-components';
 
@@ -11,6 +11,7 @@ import {
 } from 'src/utils/socketAPI';
 
 import GameModal from '@pages/Game/components/Modal/GameModal';
+import useClientWidthHeight from '@pages/Game/hooks/useClientWidthHeight';
 
 import Modal from '@components/Modal/Modal';
 
@@ -18,12 +19,17 @@ import Background from './components/Background';
 import Unit from './components/Unit';
 
 const LayoutBase = styled.div`
-  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
+
+  .game {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
 
   .background {
     position: absolute;
@@ -46,8 +52,6 @@ interface GameResult {
 }
 
 interface Props {
-  canvasWidth: number;
-  canvasHeight: number;
   targetScore: number;
   level: string;
   hostControllerId: string;
@@ -55,15 +59,11 @@ interface Props {
   sfx: boolean;
 }
 
-const Pong = ({
-  canvasWidth,
-  canvasHeight,
-  targetScore,
-  level,
-  hostControllerId,
-  type,
-  sfx,
-}: Props) => {
+const Pong = ({ targetScore, level, hostControllerId, type, sfx }: Props) => {
+  const layoutRef = useRef<HTMLDivElement>(null);
+
+  const { minLength } = useClientWidthHeight(layoutRef);
+
   const [showModal, setShowModal] = useState(false);
   const [isUserWinner, setIsUserWinner] = useState(false);
 
@@ -106,21 +106,21 @@ const Pong = ({
   }, [type]);
 
   return (
-    <LayoutBase>
+    <LayoutBase ref={layoutRef}>
       {showModal ? (
         <Modal disableBackgroundExit>
           <GameModal win={isUserWinner} />
         </Modal>
       ) : (
-        <>
+        <div className="game">
           <Background
-            canvasWidth={canvasWidth}
-            canvasHeight={canvasHeight}
+            canvasWidth={minLength}
+            canvasHeight={minLength}
             className="background"
           />
           <Unit
-            canvasWidth={canvasWidth}
-            canvasHeight={canvasHeight}
+            canvasWidth={minLength}
+            canvasHeight={minLength}
             targetScore={targetScore}
             level={level}
             hostControllerId={hostControllerId}
@@ -128,7 +128,7 @@ const Pong = ({
             sfx={sfx}
             className="unit"
           />
-        </>
+        </div>
       )}
     </LayoutBase>
   );

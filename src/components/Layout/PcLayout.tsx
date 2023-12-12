@@ -5,6 +5,16 @@ import MotionReceiver from '@components/MotionReceiver/MotionReceiver';
 const LayoutBase = styled.div`
   height: 100%;
 
+  &:has(div.game) {
+    & > header {
+      display: none;
+    }
+
+    & > footer {
+      display: none;
+    }
+  }
+
   header {
     width: 100%;
     min-height: 5rem;
@@ -12,9 +22,14 @@ const LayoutBase = styled.div`
   }
 
   main {
-    height: calc(100% - 10rem);
     &:not(:has(div.game)) {
+      height: calc(100% - 10rem);
       padding: 0 5rem;
+    }
+
+    &:has(div.game) {
+      min-height: 100%;
+      height: 100%;
     }
   }
 
