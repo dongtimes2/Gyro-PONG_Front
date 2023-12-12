@@ -5,6 +5,7 @@ const LayoutBase = styled.div`
   flex-direction: column;
   justify-content: space-evenly;
   height: 100%;
+  padding: 0 5rem;
 `;
 
 interface Props {
