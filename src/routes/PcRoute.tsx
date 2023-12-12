@@ -23,10 +23,7 @@ import Loading from '@components/Loading/Loading';
 
 const PcRoute = () => {
   const socketId = useUserStore((state) => state.socketId);
-  const clearControllerSocketId = useUserStore(
-    (state) => state.clearControllerSocketId,
-  );
-
+  const clear = useUserStore((state) => state.clear);
   const { syncSocketId } = useUserInfo();
 
   const navigate = useNavigate();
@@ -37,7 +34,7 @@ const PcRoute = () => {
 
   useEffect(() => {
     socket.on(EVENT.DISCONNECT_BY_CONTROLLER, () => {
-      clearControllerSocketId();
+      clear();
       s_DisconnectByControllerCallback();
       navigate(PATH.HOME);
     });
@@ -45,7 +42,7 @@ const PcRoute = () => {
     return () => {
       socket.off(EVENT.DISCONNECT_BY_CONTROLLER);
     };
-  }, [clearControllerSocketId, navigate]);
+  }, [navigate, clear]);
 
   return (
     <>

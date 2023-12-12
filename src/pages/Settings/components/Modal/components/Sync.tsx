@@ -62,9 +62,7 @@ type Stage = 'info' | 'left' | 'right' | 'finish';
 type Angle = { left: number; right: number };
 
 const Sync = ({ setShowModal }: Props) => {
-  const clearControllerSocketId = useUserStore(
-    (state) => state.clearControllerSocketId,
-  );
+  const clear = useUserStore((state) => state.clear);
 
   const [stage, setState] = useState<Stage>('info');
   const [angle, setAngle] = useState<Angle>({ left: 0, right: 0 });
@@ -72,7 +70,7 @@ const Sync = ({ setShowModal }: Props) => {
 
   const handleInterruptButtonClick = () => {
     s_DisconnectByUser();
-    clearControllerSocketId();
+    clear();
     setShowModal(false);
   };
 

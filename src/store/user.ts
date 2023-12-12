@@ -5,13 +5,13 @@ interface UserState {
   setSocketId: (socketId: string) => void;
   controllerSocketId: string;
   setControllerSocketId: (controllerSocketId: string) => void;
-  clearControllerSocketId: () => void;
   vibration: boolean;
   setVibration: (updater: (prevVibration: boolean) => boolean) => void;
   sfx: boolean;
   setSfx: (updater: (prevSfx: boolean) => boolean) => void;
   motion: boolean;
   setMotion: (motion: boolean) => void;
+  clear: () => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -20,7 +20,6 @@ export const useUserStore = create<UserState>((set) => ({
   controllerSocketId: '',
   setControllerSocketId: (controllerSocketId: string) =>
     set({ controllerSocketId }),
-  clearControllerSocketId: () => set({ controllerSocketId: '' }),
   vibration: false,
   setVibration: (updater) =>
     set((state) => ({ vibration: updater(state.vibration) })),
@@ -28,4 +27,5 @@ export const useUserStore = create<UserState>((set) => ({
   setSfx: (updater) => set((state) => ({ sfx: updater(state.sfx) })),
   motion: false,
   setMotion: (motion: boolean) => set({ motion }),
+  clear: () => set({ controllerSocketId: '', vibration: false, motion: false }),
 }));

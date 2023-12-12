@@ -34,13 +34,10 @@ interface Props {
 }
 
 const Status = ({ setShowModal }: Props) => {
-  const clearControllerSocketId = useUserStore(
-    (state) => state.clearControllerSocketId,
-  );
-
+  const clear = useUserStore((state) => state.clear);
   const handleDisconnectButtonClick = () => {
     s_DisconnectByUser();
-    clearControllerSocketId();
+    clear();
   };
 
   return (
