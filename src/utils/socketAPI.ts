@@ -158,19 +158,8 @@ export const s_LoadGameRoomList = () => {
   socket.emit(EVENT.LOAD_GAME_ROOM_LIST);
 };
 
-interface GameData {
-  ball: {
-    x: number;
-    y: number;
-  };
-  score: {
-    host: number;
-    guest: number;
-  };
-}
-
-export const s_SendGameData = (gameData: GameData) => {
-  socket.emit(EVENT.SEND_GAME_DATA, gameData);
+export const s_LoadGameInfo = (type: 'host' | 'guest') => {
+  socket.emit(EVENT.LOAD_GAME_INFO, type);
 };
 
 export const s_FinishGame = (winner: 'host' | 'guest') => {

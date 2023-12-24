@@ -23,12 +23,6 @@ const Layout = styled.div`
 type Type = 'host' | 'guest';
 type Step = 'waiting' | 'playing';
 
-interface GameInfo {
-  level: string;
-  targetScore: number;
-  hostControllerId: string;
-}
-
 const Game = () => {
   const { state }: { state: Type } = useLocation();
   const navigate = useNavigate();
@@ -36,11 +30,6 @@ const Game = () => {
   const sfx = useUserStore((state) => state.sfx);
 
   const [step, setStep] = useState<Step>('waiting');
-  const [gameInfo, setGameInfo] = useState<GameInfo>({
-    level: '',
-    targetScore: 0,
-    hostControllerId: '',
-  });
 
   useEffect(() => {
     if (!state) {
@@ -56,8 +45,7 @@ const Game = () => {
       event.preventDefault();
     };
 
-    socket.on(EVENT.START_GAME, (gameInfo: GameInfo) => {
-      setGameInfo(gameInfo);
+    socket.on(EVENT.START_GAME, () => {
       setStep('playing');
     });
 
@@ -75,16 +63,7 @@ const Game = () => {
   return (
     <Layout>
       {step === 'waiting' && <Waiting type={state} />}
-      {step === 'playing' &&
-        Object.values(gameInfo).reduce((acc, cur) => !!acc || !!cur, false) && (
-          <Pong
-            targetScore={gameInfo.targetScore}
-            level={gameInfo.level}
-            hostControllerId={gameInfo.hostControllerId}
-            type={state}
-            sfx={sfx}
-          />
-        )}
+      {step === 'playing' && <Pong type={state} sfx={sfx} />}
     </Layout>
   );
 };

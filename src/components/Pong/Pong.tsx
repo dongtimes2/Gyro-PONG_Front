@@ -11,12 +11,9 @@ import {
 } from 'src/utils/socketAPI';
 
 import GameModal from '@pages/Game/components/Modal/GameModal';
-import useClientWidthHeight from '@pages/Game/hooks/useClientWidthHeight';
 
+import GameRenderer from '@components/GameRenderer/GameRenderer';
 import Modal from '@components/Modal/Modal';
-
-import Background from './components/Background';
-import Unit from './components/Unit';
 
 const LayoutBase = styled.div`
   display: flex;
@@ -52,17 +49,12 @@ interface GameResult {
 }
 
 interface Props {
-  targetScore: number;
-  level: string;
-  hostControllerId: string;
   type: 'host' | 'guest';
   sfx: boolean;
 }
 
-const Pong = ({ targetScore, level, hostControllerId, type, sfx }: Props) => {
+const Pong = ({ type, sfx }: Props) => {
   const layoutRef = useRef<HTMLDivElement>(null);
-
-  const { minLength } = useClientWidthHeight(layoutRef);
 
   const [showModal, setShowModal] = useState(false);
   const [isUserWinner, setIsUserWinner] = useState(false);
@@ -113,21 +105,7 @@ const Pong = ({ targetScore, level, hostControllerId, type, sfx }: Props) => {
         </Modal>
       ) : (
         <div className="game">
-          <Background
-            canvasWidth={minLength}
-            canvasHeight={minLength}
-            className="background"
-          />
-          <Unit
-            canvasWidth={minLength}
-            canvasHeight={minLength}
-            targetScore={targetScore}
-            level={level}
-            hostControllerId={hostControllerId}
-            type={type}
-            sfx={sfx}
-            className="unit"
-          />
+          <GameRenderer type={type} sfx={sfx} />
         </div>
       )}
     </LayoutBase>
