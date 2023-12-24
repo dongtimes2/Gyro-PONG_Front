@@ -34,7 +34,7 @@ const LayoutBase = styled.div`
   }
 `;
 
-const levelData = ['쉬움', '어려움'];
+const levelData = ['easy', 'hard'];
 const targetScoreData = [11, 21];
 
 interface Props {
