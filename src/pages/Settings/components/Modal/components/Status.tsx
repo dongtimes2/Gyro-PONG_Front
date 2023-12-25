@@ -1,10 +1,20 @@
+import { useEffect, useState } from 'react';
+
 import styled from 'styled-components';
 
+import { EVENT } from 'src/constants/socketEvent';
 import { useUserStore } from 'src/store/user';
-import { s_DisconnectByUser } from 'src/utils/socketAPI';
+import {
+  s_AngleInfo,
+  s_DisconnectByUser,
+  s_ResetCheck,
+  socket,
+} from 'src/utils/socketAPI';
 
 import Button from '@components/Button/Button';
 import Title from '@components/Title/Title';
+
+import { Step } from '../../../types/step';
 
 const LayoutBase = styled.div`
   display: flex;
@@ -29,24 +39,52 @@ const LayoutBase = styled.div`
   }
 `;
 
+type Angle = { left: number; right: number };
 interface Props {
   setShowModal: (value: boolean) => void;
+  setStep: React.Dispatch<React.SetStateAction<Step>>;
 }
 
-const Status = ({ setShowModal }: Props) => {
+const Status = ({ setShowModal, setStep }: Props) => {
   const clear = useUserStore((state) => state.clear);
+
+  const [angle, setAngle] = useState<Angle>({ left: 0, right: 0 });
+
   const handleDisconnectButtonClick = () => {
     s_DisconnectByUser();
     clear();
   };
+
+  const handleResetButtonClick = () => {
+    s_ResetCheck();
+    setStep('reset');
+  };
+
+  useEffect(() => {
+    s_AngleInfo();
+
+    socket.on(EVENT.ANGLE_INFO, (angle: Angle) => {
+      setAngle({ left: angle.left, right: angle.right });
+    });
+
+    return () => {
+      socket.off(EVENT.ANGLE_INFO);
+    };
+  }, []);
 
   return (
     <LayoutBase>
       <Title size="sm">연결 정보</Title>
       <div className="messageArea">
         <p>모바일 기기와 연결되어 있습니다</p>
+        <p>
+          좌측 기울기: {angle.left}, 우측 기울기: {angle.right}
+        </p>
       </div>
       <div className="buttonArea">
+        <Button size="sm" onClick={handleResetButtonClick}>
+          재설정 하기
+        </Button>
         <Button size="sm" onClick={handleDisconnectButtonClick}>
           연결 끊기
         </Button>

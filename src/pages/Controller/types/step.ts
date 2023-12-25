@@ -4,4 +4,5 @@ export type Step =
   | 'sync'
   | 'expiration'
   | 'home'
-  | 'game';
+  | 'game'
+  | 'reset';

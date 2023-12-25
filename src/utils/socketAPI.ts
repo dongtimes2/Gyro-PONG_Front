@@ -89,6 +89,14 @@ export const s_SendMotionRight = () => {
   socket.emit(EVENT.SEND_MOTION_RIGHT);
 };
 
+export const s_ResetCheck = () => {
+  socket.emit(EVENT.RESET_CHECK);
+};
+
+export const s_AngleInfo = () => {
+  socket.emit(EVENT.ANGLE_INFO);
+};
+
 // 진동 관련 API
 export const s_SetVibration = (set: boolean) => {
   socket.emit(EVENT.SET_VIBRATION, set);

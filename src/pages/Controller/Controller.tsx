@@ -18,6 +18,7 @@ import Connection from './components/Connection';
 import Expiration from './components/Expiration';
 import Game from './components/Game';
 import Home from './components/Home';
+import Reset from './components/Reset';
 import Sync from './components/Sync';
 import Layout from './layout/Layout';
 import { activate, deactivate } from './utils/sensor';
@@ -50,6 +51,10 @@ const Controller = () => {
 
     socket.on(EVENT.CHECK_CLOSE, () => {
       setStep('home');
+    });
+
+    socket.on(EVENT.RESET_CHECK, () => {
+      setStep('reset');
     });
 
     socket.on(EVENT.CREATE_GAME_SUCCESS, (gameInfo: GameInfo) => {
@@ -120,6 +125,7 @@ const Controller = () => {
     return () => {
       socket.off(EVENT.DISCONNECT_BY_USER);
       socket.off(EVENT.CHECK_CLOSE);
+      socket.off(EVENT.RESET_CHECK);
       socket.off(EVENT.CREATE_GAME_SUCCESS);
       socket.off(EVENT.EXIT_GAME_BY_HOST);
       socket.off(EVENT.JOIN_GAME);
@@ -142,6 +148,7 @@ const Controller = () => {
       {step === 'expiration' && <Expiration />}
       {step === 'home' && <Home />}
       {step === 'game' && <Game />}
+      {step === 'reset' && <Reset setStep={setStep} />}
     </Layout>
   );
 };

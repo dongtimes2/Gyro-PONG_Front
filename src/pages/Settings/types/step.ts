@@ -1,1 +1,1 @@
-export type Step = 'connection' | 'sync' | 'status';
+export type Step = 'connection' | 'sync' | 'status' | 'reset';

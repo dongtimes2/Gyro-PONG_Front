@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useUserStore } from 'src/store/user';
 
 import Connection from './components/Connection';
+import Reset from './components/Reset';
 import Status from './components/Status';
 import Sync from './components/Sync';
 
@@ -52,7 +53,12 @@ const SettingsModal = ({ setShowModal }: Props) => {
       {step === 'sync' && (
         <Sync setShowModal={setShowModal} setStep={setStep} />
       )}
-      {step === 'status' && <Status setShowModal={setShowModal} />}
+      {step === 'status' && (
+        <Status setShowModal={setShowModal} setStep={setStep} />
+      )}
+      {step === 'reset' && (
+        <Reset setShowModal={setShowModal} setStep={setStep} />
+      )}
     </LayoutBase>
   );
 };
