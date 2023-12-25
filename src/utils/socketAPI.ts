@@ -49,20 +49,20 @@ export const s_InvalidSensor = () => {
   socket.emit(EVENT.INVALID_SENSOR);
 };
 
-export const s_CheckLeft = () => {
-  socket.emit(EVENT.CHECK_LEFT);
+export const s_LeftAngleCheck = () => {
+  socket.emit(EVENT.LEFT_ANGLE_CHECK);
 };
 
-export const s_CheckRight = (leftBeta: number) => {
-  socket.emit(EVENT.CHECK_RIGHT, leftBeta);
+export const s_RightAngleCheck = (leftBeta: number) => {
+  socket.emit(EVENT.RIGHT_ANGLE_CHECK, leftBeta);
 };
 
-export const s_CheckFinish = (rightBeta: number) => {
-  socket.emit(EVENT.CHECK_FINISH, rightBeta);
+export const s_FinishAngleCheck = (rightBeta: number) => {
+  socket.emit(EVENT.FINISH_ANGLE_CHECK, rightBeta);
 };
 
-export const s_CheckClose = () => {
-  socket.emit(EVENT.CHECK_CLOSE);
+export const s_CloseAngleCheck = () => {
+  socket.emit(EVENT.CLOSE_ANGLE_CHECK);
 };
 
 export const s_SetMotion = (set: boolean) => {
@@ -89,8 +89,8 @@ export const s_SendMotionRight = () => {
   socket.emit(EVENT.SEND_MOTION_RIGHT);
 };
 
-export const s_ResetCheck = () => {
-  socket.emit(EVENT.RESET_CHECK);
+export const s_ResetAngle = () => {
+  socket.emit(EVENT.RESET_ANGLE);
 };
 
 export const s_AngleInfo = () => {

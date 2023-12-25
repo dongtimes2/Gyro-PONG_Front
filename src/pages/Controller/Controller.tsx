@@ -49,11 +49,11 @@ const Controller = () => {
       setStep('expiration');
     });
 
-    socket.on(EVENT.CHECK_CLOSE, () => {
+    socket.on(EVENT.CLOSE_ANGLE_CHECK, () => {
       setStep('home');
     });
 
-    socket.on(EVENT.RESET_CHECK, () => {
+    socket.on(EVENT.RESET_ANGLE, () => {
       setStep('reset');
     });
 
@@ -124,8 +124,8 @@ const Controller = () => {
 
     return () => {
       socket.off(EVENT.DISCONNECT_BY_USER);
-      socket.off(EVENT.CHECK_CLOSE);
-      socket.off(EVENT.RESET_CHECK);
+      socket.off(EVENT.CLOSE_ANGLE_CHECK);
+      socket.off(EVENT.RESET_ANGLE);
       socket.off(EVENT.CREATE_GAME_SUCCESS);
       socket.off(EVENT.EXIT_GAME_BY_HOST);
       socket.off(EVENT.JOIN_GAME);

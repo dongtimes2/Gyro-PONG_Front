@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { EVENT } from 'src/constants/socketEvent';
-import { s_CheckClose, socket } from 'src/utils/socketAPI';
+import { s_CloseAngleCheck, socket } from 'src/utils/socketAPI';
 
 import Button from '@components/Button/Button';
 import Title from '@components/Title/Title';
@@ -66,20 +66,20 @@ const Reset = ({ setShowModal }: Props) => {
   const [beta, setBeta] = useState(0);
 
   const handleCloseButtonClick = () => {
-    s_CheckClose();
+    s_CloseAngleCheck();
     setShowModal(false);
   };
 
   useEffect(() => {
-    socket.on(EVENT.CHECK_LEFT, () => {
+    socket.on(EVENT.LEFT_ANGLE_CHECK, () => {
       setState('left');
     });
 
-    socket.on(EVENT.CHECK_RIGHT, () => {
+    socket.on(EVENT.RIGHT_ANGLE_CHECK, () => {
       setState('right');
     });
 
-    socket.on(EVENT.CHECK_FINISH, (angle: Angle) => {
+    socket.on(EVENT.FINISH_ANGLE_CHECK, (angle: Angle) => {
       setState('finish');
       setAngle(angle);
     });
@@ -89,9 +89,9 @@ const Reset = ({ setShowModal }: Props) => {
     });
 
     return () => {
-      socket.off(EVENT.CHECK_LEFT);
-      socket.off(EVENT.CHECK_RIGHT);
-      socket.off(EVENT.CHECK_FINISH);
+      socket.off(EVENT.LEFT_ANGLE_CHECK);
+      socket.off(EVENT.RIGHT_ANGLE_CHECK);
+      socket.off(EVENT.FINISH_ANGLE_CHECK);
       socket.off(EVENT.SEND_BETA);
     };
   }, [setShowModal]);

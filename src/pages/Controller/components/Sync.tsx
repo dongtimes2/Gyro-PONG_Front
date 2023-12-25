@@ -4,11 +4,11 @@ import styled from 'styled-components';
 
 import { EVENT } from 'src/constants/socketEvent';
 import {
-  s_CheckClose,
-  s_CheckFinish,
-  s_CheckLeft,
-  s_CheckRight,
+  s_CloseAngleCheck,
   s_DisconnectByController,
+  s_FinishAngleCheck,
+  s_LeftAngleCheck,
+  s_RightAngleCheck,
   socket,
 } from 'src/utils/socketAPI';
 
@@ -51,20 +51,20 @@ const Sync = ({ setStep }: Props) => {
   const handleNextButtonClick = async (next: Stage) => {
     if (stage === 'info') {
       await activate('normal');
-      s_CheckLeft();
+      s_LeftAngleCheck();
     }
 
     if (stage === 'left') {
-      s_CheckRight(beta);
+      s_RightAngleCheck(beta);
     }
 
     if (stage === 'right') {
       deactivate('normal');
-      s_CheckFinish(beta);
+      s_FinishAngleCheck(beta);
     }
 
     if (stage === 'finish') {
-      s_CheckClose();
+      s_CloseAngleCheck();
       setStep('home');
     }
 

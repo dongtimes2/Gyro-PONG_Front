@@ -51,12 +51,12 @@ const Settings = () => {
   };
 
   useEffect(() => {
-    socket.on(EVENT.CHECK_CLOSE, () => {
+    socket.on(EVENT.CLOSE_ANGLE_CHECK, () => {
       setShowModal(false);
     });
 
     return () => {
-      socket.off(EVENT.CHECK_CLOSE);
+      socket.off(EVENT.CLOSE_ANGLE_CHECK);
     };
   }, []);
 

@@ -7,7 +7,7 @@ import { useUserStore } from 'src/store/user';
 import {
   s_AngleInfo,
   s_DisconnectByUser,
-  s_ResetCheck,
+  s_ResetAngle,
   socket,
 } from 'src/utils/socketAPI';
 
@@ -56,7 +56,7 @@ const Status = ({ setShowModal, setStep }: Props) => {
   };
 
   const handleResetButtonClick = () => {
-    s_ResetCheck();
+    s_ResetAngle();
     setStep('reset');
   };
 
