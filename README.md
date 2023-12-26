@@ -159,9 +159,11 @@ https://github.com/dongtimes2/readme_image/assets/98700888/668f5c6e-a5cd-4628-ae
 - React
 - TypeScript
 - ~~Recoil~~ => Zustand
+  - zustand는 recoil과 달리 provider로 감쌀 필요가 없다는 점, 각각의 atom 별로 일일이 key를 지정할 필요가 없다는 점, 그리고 리뉴얼 시점의 npm trend에서 zustand가 높은 점유율을 기록한 점을 근거로 zustand를 도입하였습니다.
 - Canvas
 - Socket.io-client
 - Styled components
+- Phaser3
 
 ### 그 외
 
@@ -174,6 +176,7 @@ https://github.com/dongtimes2/readme_image/assets/98700888/668f5c6e-a5cd-4628-ae
 ### 배포
 
 - ~~Netlify~~ => AWS
+  - 프론트와 백엔드의 배포 환경을 한 가지로 통일하기 위해 aws로 이전하였습니다.
 
 ## 백엔드
 
@@ -181,6 +184,7 @@ https://github.com/dongtimes2/readme_image/assets/98700888/668f5c6e-a5cd-4628-ae
 
 - Express
 - Socket.io
+- Matter.js
 
 ### 그 외
 
