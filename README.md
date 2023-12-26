@@ -464,6 +464,15 @@ public update() {
 }
 ```
 
+구현한 결과의 모습은 아래 영상과 같습니다.  
+호스트와 게스트의 화면 결과가 동일할 뿐만 아니라, 기존에 존재하던 버벅임도 해결된 모습을 볼 수 있습니다.  
+
+https://github.com/dongtimes2/readme_image/assets/98700888/ed017f70-96e1-45c6-9097-58e0ad2b90d4
+
+<div align="center" style="max-width: 100%;">
+  <p>좌측: 호스트 화면, 우측: 게스트 화면</p>
+</div>
+
 <br>
 
 ## ball이 wall이나 paddle에 맞았을 때 튕김 구현하기
