@@ -50,8 +50,7 @@ const GlobalStyles = createGlobalStyle`
   /* font */
   @font-face {
     font-family: 'NeoDunggeunmo';
-    src: url('https://cdn.jsdelivr.net/gh/webfontworld/neodgm/NeoDunggeunmo.woff2') format('woff2'),
-    url('https://cdn.jsdelivr.net/gh/webfontworld/neodgm/NeoDunggeunmo.woff') format('woff');
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.3/NeoDunggeunmo.woff') format('woff');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
